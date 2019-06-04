@@ -31,8 +31,8 @@ class App extends Component {
       
   handleSearchChange = (event, { value }) => {
       this.getMovies(this.searchURL + value)
-        .then(json => this.setState({
-          movies: json.results,
+        .then(json => json.results !== undefined && this.setState({
+          movies: json.results
         }))
   }
   
@@ -43,7 +43,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h1>flix me!</h1>
+          <h1>flix me</h1>
         </header>
         <Switch>
           <Route exact path='/' render={props =>
@@ -55,16 +55,18 @@ class App extends Component {
             <MoviesContainer
               {...props}
               movies={movies}
-              searchTerm={searchTerm}
               handleSearchChange={handleSearchChange}
             />
           }
           />
           <Route path='/movies/:id' component={props => {
-            const id = props.match.params.id
+            const id = parseInt(props.match.params.id, 10)
             const movie = movies.find(movie => movie.id === id)
             if (movies.length === 0) return <h1>Loading...</h1>
-            if (movies.length > 0 && movie === undefined) return <h1>movie not found</h1>
+            if (movies.length > 0 && movie === undefined) {
+              console.log(id)
+              return <h1>movie not found</h1>
+            }
             return <MovieDetails movie={movie} {...props} />
           }} />
           <Route component={props => <h1>404 - Not Found</h1>}/>

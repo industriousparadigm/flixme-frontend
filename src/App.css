@@ -18,14 +18,37 @@
   color: white;
 }
 
+@import url('https://fonts.googleapis.com/css?family=Bitter&display=swap');
+
 .App-header h1 {
+  font-family: 'Bitter', serif;
   font-size: calc(50px + 5vmin);
+  text-transform: uppercase;
 }
 
 .App-link {
   color: #61dafb;
 }
 
-h1 {
+.movieSearch {
+  margin-bottom: 5vh;
+}
+
+.moviePage {
+  width: 70%;
+  display: flex;
+  justify-content: center;
+}
+
+.moviePoster {
+  display: inline;
+  float: left;
+}
+
+.movieInfo {
+  display: inline;
+}
+
+.movieInfo .header {
   color: white
 }

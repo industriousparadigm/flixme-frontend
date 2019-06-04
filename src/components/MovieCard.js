@@ -1,13 +1,14 @@
 import React from 'react'
 import { Card, Icon, Image } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 
 const MovieCard = props => {
   const posterURL = 'http://image.tmdb.org/t/p/w300'
 
-  const { poster_path, title, release_date, overview, vote_average } = props.movie
+  const { id, poster_path, title, release_date, overview, vote_average } = props.movie
 
   return (
-    <Card link>
+    <Card link href={`/movies/${id}`}>
       <Image src={posterURL + poster_path} wrapped ui={false} />
       {/* <Card.Content>
         <Card.Header>{title}</Card.Header>
