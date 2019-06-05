@@ -1,12 +1,12 @@
 .App {
   text-align: center;
   min-height: 100vh;
-  background: url('./img/kilyan-sockalingum-478724-unsplash.jpg') no-repeat center center fixed;
+  background: url("./img/kilyan-sockalingum-478724-unsplash.jpg") no-repeat
+    center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-
 }
 
 .App-header {
@@ -18,10 +18,10 @@
   color: white;
 }
 
-@import url('https://fonts.googleapis.com/css?family=Bitter&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Bitter&display=swap");
 
 .App-header h1 {
-  font-family: 'Bitter', serif;
+  font-family: "Bitter", serif;
   font-size: calc(50px + 5vmin);
   text-transform: uppercase;
 }
@@ -32,6 +32,10 @@
 
 .movieSearch {
   margin-bottom: 5vh;
+}
+
+.moviesContainer {
+  padding: 2vh;
 }
 
 .moviePage {
@@ -50,5 +54,5 @@
 }
 
 .movieInfo .header {
-  color: white
+  color: white;
 }

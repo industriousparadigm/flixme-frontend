@@ -19,12 +19,12 @@ const MoviesContainer = props => {
         showNoResults={false}
         className='movieSearch'
       />
-      <Card.Group itemsPerRow={5}>
+      <Card.Group itemsPerRow={5} className='moviesContainer' centered >
         {renderCards()}
       </Card.Group>
 
     </Fragment>
   )
 }
- 
+
 export default MoviesContainer
