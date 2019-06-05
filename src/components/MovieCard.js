@@ -8,7 +8,8 @@ const MovieCard = props => {
   const { id, poster_path, title, release_date, overview, vote_average } = props.movie
 
   return (
-    <Card link href={`/movies/${id}`}>
+    <Card link as={Link} to={`/movies/${id}`}>
+
       <Image src={posterURL + poster_path} wrapped ui={false} />
       {/* <Card.Content>
         <Card.Header>{title}</Card.Header>
@@ -25,6 +26,7 @@ const MovieCard = props => {
         </a>
       </Card.Content> */}
     </Card>
+
   )
 }
 

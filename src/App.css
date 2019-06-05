@@ -1,4 +1,6 @@
-.App {
+@import url("https://fonts.googleapis.com/css?family=Arvo&display=swap");
+
+body .App {
   text-align: center;
   min-height: 100vh;
   background: url("./img/kilyan-sockalingum-478724-unsplash.jpg") no-repeat
@@ -18,16 +20,16 @@
   color: white;
 }
 
+a #flixme {
+  color: white;
+}
+
 @import url("https://fonts.googleapis.com/css?family=Bitter&display=swap");
 
-.App-header h1 {
+.App-header h1#flixme {
   font-family: "Bitter", serif;
   font-size: calc(50px + 5vmin);
   text-transform: uppercase;
-}
-
-.App-link {
-  color: #61dafb;
 }
 
 .movieSearch {
@@ -39,20 +41,29 @@
 }
 
 .moviePage {
+  padding: 2%;
+  background: rgba(0, 0, 19, 0.6);
+  margin: 0 auto;
   width: 70%;
   display: flex;
-  justify-content: center;
+  border-radius: 10px;
 }
 
 .moviePoster {
-  display: inline;
-  float: left;
+  margin-right: 2vw;
 }
 
 .movieInfo {
-  display: inline;
+  color: white;
+  text-align: left;
 }
 
 .movieInfo .header {
   color: white;
+}
+
+.movieRating {
+  background: rgba(255, 255, 255, 1);
+  padding: 1%;
+  border-radius: 5px;
 }

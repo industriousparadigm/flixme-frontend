@@ -2,9 +2,10 @@ import React, { Fragment } from 'react'
 import MovieCard from './MovieCard'
 import { Card, Search } from 'semantic-ui-react'
 import _ from 'lodash'
+import InfiniteScroll from 'react-infinite-scroller'
 
 const MoviesContainer = props => {
-  const { movies, handleSearchChange } = props
+  const { movies, handleSearchChange, searchTerm, handleScroll } = props
 
   const renderCards = () =>
     movies.map(movie =>
@@ -18,10 +19,18 @@ const MoviesContainer = props => {
         size='massive'
         showNoResults={false}
         className='movieSearch'
+        defaultValue={searchTerm}
       />
-      <Card.Group itemsPerRow={5} className='moviesContainer' centered >
-        {renderCards()}
-      </Card.Group>
+      <InfiniteScroll
+        pageStart={0}
+        loadMore={handleScroll}
+        hasMore={true || false}
+        loader={<div className="loader" key={0}>Loading ...</div>}
+      >
+        <Card.Group itemsPerRow={5} className='moviesContainer' centered >
+          {renderCards()}
+        </Card.Group>
+      </InfiniteScroll>
 
     </Fragment>
   )
