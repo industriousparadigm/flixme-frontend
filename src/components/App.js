@@ -3,10 +3,15 @@ import '../App.css'
 import MoviesContainer from './MoviesContainer'
 import MovieDetails from './MovieDetails'
 import Choices from './Choices';
+import UserProfile from './UserProfile'
 
 import { Route, Switch, Link } from 'react-router-dom'
 
 const API_KEY = process.env.REACT_APP_TMDB_KEY
+
+const onlyUnique = (value, index, self) => {
+  return self.indexOf(value) === index;
+}
 
 class App extends Component {
   state = {
@@ -32,7 +37,7 @@ class App extends Component {
   }
 
   appendMovies = json => {
-    const movies = [...this.state.movies].concat(json.results)
+    const movies = ([...this.state.movies].concat(json.results)).filter(onlyUnique)
     this.setState({ movies })
   }
 
@@ -91,7 +96,15 @@ class App extends Component {
               }
               return <MovieDetails movie={movie} {...props} />
             }} />
-          <Route component={props => <h1>404 - Not Found</h1>} />
+          <Route
+            path='/users/:username'
+            render={props => {
+              const username = props.match.params.username
+              const user = { username }
+              return <UserProfile user={user} {...props} />
+            }} />
+
+          <Route component={props => <img src='http://www.404lovers.com/wp-content/uploads/2014/08/batman-3ddotde-1170x563.jpg' alt='404 not found'></img>} />
         </Switch>
       </div>
     )
