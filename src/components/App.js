@@ -6,6 +6,7 @@ import Choices from './Choices';
 
 import { Route, Switch, Link } from 'react-router-dom'
 
+const API_KEY = process.env.REACT_APP_TMDB_KEY
 
 class App extends Component {
   state = {
@@ -13,7 +14,7 @@ class App extends Component {
     searchTerm: ''
   }
 
-  moviesURL = 'https://api.themoviedb.org/3/discover/movie?api_key=b90e3d41e6ca35ff7dbd3597740c1ca6&language=en-US&sort_by=popularity.desc&include_video=false&page='
+  moviesURL = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&include_video=false&page=`
   searchURL = 'https://api.themoviedb.org/3/search/movie?api_key=b90e3d41e6ca35ff7dbd3597740c1ca6&language=en-US&page=1&query='
 
   componentDidMount() {
