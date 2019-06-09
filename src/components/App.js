@@ -7,7 +7,10 @@ import UserProfile from './UserProfile'
 
 import { Route, Switch, Link } from 'react-router-dom'
 
-const API_KEY = process.env.REACT_APP_TMDB_KEY
+import { Menu, Icon } from 'semantic-ui-react'
+
+
+// const API_KEY = process.env.REACT_APP_TMDB_KEY
 
 const onlyUnique = (value, index, self) => {
   return self.indexOf(value) === index;
@@ -16,55 +19,110 @@ const onlyUnique = (value, index, self) => {
 class App extends Component {
   state = {
     movies: [],
-    searchTerm: ''
+    searchTerm: '',
+    currentUser: null,
+    activeItem: null
   }
 
-  moviesURL = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&include_video=false&page=`
-  searchURL = 'https://api.themoviedb.org/3/search/movie?api_key=b90e3d41e6ca35ff7dbd3597740c1ca6&language=en-US&page=1&query='
+  moviesURL = 'http://localhost:3017/movies'
+  searchURL = 'http://localhost:3017/movie_search?search='
+  usersURL = 'http://localhost:3017/users'
 
   componentDidMount() {
-    this.getMovies(this.moviesURL + "1")
+    this.getMovies(this.moviesURL)
       .then(this.renderMovies)
+    this.getUser(this.usersURL + "/2")
+      .then(currentUser => {
+        this.setState({ currentUser })
+      })
   }
 
   getMovies = (url) =>
     fetch(url)
       .then(resp => resp.json())
 
+  getUser = (url) =>
+    fetch(url)
+      .then(resp => resp.json())
+
   renderMovies = json => {
-    const movies = json.results
+    const movies = json
     this.setState({ movies })
   }
 
   appendMovies = json => {
-    const movies = ([...this.state.movies].concat(json.results)).filter(onlyUnique)
+    const movies = ([...this.state.movies].concat(json)).filter(onlyUnique)
     this.setState({ movies })
+  }
+
+  getUserMovieRating = movieId => {
+    return fetch(this.usersURL + `/${this.state.currentUser.id}`)
+      .then(resp => resp.json())
+      .then(user => {
+        const movieWatched = user.movies_watched.find(mw => mw.movie_id === movieId)
+        movieWatched && console.log(movieWatched.rating)
+        return movieWatched
+          ? movieWatched.rating
+          : 0
+      })
   }
 
   handleSearchChange = (event, { value }) => {
     // return default movies in case search is empty or spaces only
     if (value.replace(/\s/g, "").length === 0) {
-      return this.getMovies(this.moviesURL)
+      this.getMovies(this.moviesURL)
         .then(this.renderMovies)
+    } else {
+      this.getMovies(this.searchURL + value)
+        .then(movies => {
+          console.log(movies)
+          movies !== undefined && this.setState({
+            movies
+          })
+        })
     }
-    this.getMovies(this.searchURL + value)
-      .then(json => json.results !== undefined && this.setState({
-        movies: json.results,
-        searchTerm: value
-      }))
+    this.setState({ searchTerm: value })
   }
 
   handleScroll = page => {
-    this.getMovies(this.moviesURL + `${page}`)
+    !this.state.searchTerm && this.getMovies(this.moviesURL + `?page=${page}`)
       .then(this.appendMovies)
   }
 
+  handleItemClick = event => {
+    console.log(event.target)
+  }
+
   render() {
-    const { movies, searchTerm } = this.state
+    const { movies, searchTerm, activeItem, currentUser } = this.state
     const { handleSearchChange, handleScroll } = this
 
     return (
       <div className="App">
+        <Menu className='App-navbar' compact icon='labeled' inverted>
+          <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClick}>
+            <Icon name='home' />
+            home
+          </Menu.Item>
+
+          <Menu.Item
+            name='film'
+            active={activeItem === 'film'}
+            onClick={this.handleItemClick}
+          >
+            <Icon name='film' />
+            movies
+        </Menu.Item>
+
+          <Menu.Item
+            name='user'
+            active={activeItem === 'user'}
+            onClick={this.handleItemClick}
+          >
+            <Icon name='user' />
+            profile
+        </Menu.Item>
+        </Menu>
         <header className="App-header">
           <Link to={'/'}><h1 id='flixme'>flix me</h1></Link>
         </header>
@@ -91,17 +149,20 @@ class App extends Component {
               const movie = movies.find(movie => movie.id === id)
               if (movies.length === 0) return <h1>Loading...</h1>
               if (movies.length > 0 && movie === undefined) {
-                console.log(id)
                 return <h1>movie not found</h1>
               }
-              return <MovieDetails movie={movie} {...props} />
+              return <MovieDetails
+                movie={movie}
+                currentUser={currentUser}
+                userRating={this.getUserMovieRating(movie.id)}
+                {...props}
+              />
             }} />
           <Route
             path='/users/:username'
             render={props => {
-              const username = props.match.params.username
-              const user = { username }
-              return <UserProfile user={user} {...props} />
+              return <UserProfile user={currentUser} {...props} />
+              // const username = props.match.params.username
             }} />
 
           <Route component={props => <img src='http://www.404lovers.com/wp-content/uploads/2014/08/batman-3ddotde-1170x563.jpg' alt='404 not found'></img>} />

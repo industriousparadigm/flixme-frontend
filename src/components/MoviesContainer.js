@@ -22,16 +22,16 @@ const MoviesContainer = props => {
         defaultValue={searchTerm}
       />
       <InfiniteScroll
-        pageStart={0}
+        pageStart={1}
+        initialLoad={false}
         loadMore={handleScroll}
         hasMore={true || false}
-        loader={<div className="loader" key={0}>Loading ...</div>}
+        loader={!searchTerm ? <div className="loader" key={0}>Loading ...</div> : null}
       >
         <Card.Group itemsPerRow={5} className='moviesContainer' centered >
           {renderCards()}
         </Card.Group>
       </InfiniteScroll>
-
     </Fragment>
   )
 }

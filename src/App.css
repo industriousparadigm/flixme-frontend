@@ -20,6 +20,12 @@ body .App {
   color: white;
 }
 
+/* .App .App-navbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+} */
+
 a #flixme {
   color: white;
 }
@@ -66,4 +72,17 @@ a #flixme {
   background: rgba(255, 255, 255, 1);
   padding: 1%;
   border-radius: 5px;
+}
+
+.userPage .header {
+  color: white;
+}
+
+.loader {
+  color: white;
+  padding: 50px;
+  font-family: "Bitter", serif;
+  font-size: calc(50px + 5vmin);
+  text-transform: uppercase;
+  z-index: 99;
 }

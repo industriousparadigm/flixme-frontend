@@ -4,12 +4,13 @@ import { Link } from 'react-router-dom'
 
 
 const UserProfile = props => {
+  const { firstName, lastName, avatarUrl } = props.user
 
   return (
     <div className="userPage">
       <section className='userDetails'>
-        <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png' size='medium' wrapped />
-        <Header as='h1' >{props.user.username}</Header>
+        <Image src={avatarUrl} size='medium' wrapped />
+        <Header as='h1' >{firstName + ' ' + lastName}</Header>
       </section>
       <section className='userActivity'>
         <section className='userRecentMovies'>
