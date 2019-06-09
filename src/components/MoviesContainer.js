@@ -8,7 +8,7 @@ const MoviesContainer = props => {
   const { movies, handleSearchChange, searchTerm, handleScroll } = props
 
   const renderCards = () =>
-    movies.map(movie =>
+    movies.length > 0 && movies.map(movie =>
       <MovieCard key={movie.id} movie={movie} />
     )
 
