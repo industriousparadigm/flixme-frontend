@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css?family=Arvo&display=swap");
+@import url('https://fonts.googleapis.com/css?family=Arvo&display=swap');
 
 body .App {
   text-align: center;
   min-height: 100vh;
-  background: url("./img/kilyan-sockalingum-478724-unsplash.jpg") no-repeat
+  background: url('./img/kilyan-sockalingum-478724-unsplash.jpg') no-repeat
     center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -20,6 +20,23 @@ body .App {
   color: white;
 }
 
+.iconMenu {
+  position: fixed;
+  right: 0;
+  z-index: 99;
+  opacity: 0.6;
+}
+
+.authForm {
+  margin: 0 auto;
+  text-align: center;
+  width: 40vw;
+  /* display: flex;
+  flex-direction: column;
+  justify-content: center; */
+  color: white;
+}
+
 /* .App .App-navbar {
   display: flex;
   align-items: flex-start;
@@ -30,10 +47,10 @@ a #flixme {
   color: white;
 }
 
-@import url("https://fonts.googleapis.com/css?family=Bitter&display=swap");
+@import url('https://fonts.googleapis.com/css?family=Bitter&display=swap');
 
 .App-header h1#flixme {
-  font-family: "Bitter", serif;
+  font-family: 'Bitter', serif;
   font-size: calc(50px + 5vmin);
   text-transform: uppercase;
 }
@@ -81,7 +98,7 @@ a #flixme {
 .loader {
   color: white;
   padding: 50px;
-  font-family: "Bitter", serif;
+  font-family: 'Bitter', serif;
   font-size: calc(50px + 5vmin);
   text-transform: uppercase;
   z-index: 99;

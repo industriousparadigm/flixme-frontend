@@ -7,7 +7,7 @@ const MovieDetails = props => {
   const genericPosterURL = 'https://i.pinimg.com/originals/b3/5f/c9/b35fc9dee41f17718303d5a5ea11e0a4.jpg'
 
   const { id, poster_path, title, release_date, overview, current_user_rating } = props.movie
-  const { currentUser, userRating, handleRating } = props
+  const { handleRating, handleWatched, currentUser } = props
 
   return (
     <div className="moviePage">
@@ -21,7 +21,15 @@ const MovieDetails = props => {
       <section className='movieInfo'>
         <Header as='h1' >{`${title} (${release_date.slice(0, 4)})`}</Header>
         <p>{overview}</p>
-        <Button>Mark as seen</Button>
+        <Button
+          disabled={!currentUser ? true : false}
+          onClick={() => handleWatched(id)}>
+          {
+            current_user_rating === null
+              ? 'Mark as seen'
+              : 'Mark as NOT seen'
+          }
+        </Button>
         <br />
         <br />
         <Rating
@@ -29,11 +37,14 @@ const MovieDetails = props => {
           movieid={id}
           onRate={handleRating}
           maxRating={5}
-          defaultRating={current_user_rating}
+          // defaultRating={current_user_rating ? current_user_rating : 0}
+          rating={current_user_rating ? current_user_rating : 0}
           icon='star'
           size='massive'
           clearable
-        /> <br /> <br />
+          disabled={!currentUser ? true : false}
+        />
+        <br /> <br />
         <Button icon as={Link} to={`/movies`}>
           <Icon name='left arrow' />
         </Button>

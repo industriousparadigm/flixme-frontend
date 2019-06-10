@@ -1,10 +1,31 @@
 class API {
   static baseURL = 'http://localhost:3017'
-  static moviesURL = API.baseURL + '/movies'
-  static searchURL = API.baseURL + '/movie_search?search='
-  static usersURL = API.baseURL + '/users'
-  static rateMovieURL = 'http://localhost:3017/rate_movie'
+  static moviesURL = this.baseURL + '/movies'
+  static searchURL = this.baseURL + '/movie_search?search='
+  static usersURL = this.baseURL + '/users'
+  static rateMovieURL = this.baseURL + '/rate_movie'
+  static deleteMovieURL = this.baseURL + '/forget_movie'
+  static signInURL = this.baseURL + '/signin'
+
   static posterURL = 'http://image.tmdb.org/t/p/w300'
+  static selfHelpURL = 'https://www.youtube.com/results?search_query=selfhelp'
+
+
+  static signIn(user) {
+    return fetch(this.signInURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user)
+    }).then(resp => resp.json())
+  }
+
+  // static validate () {
+  //   const token = localStorage.getItem('token')
+  //   return fetch(this.validateUrl, {
+  //     headers: { Authorization: token },
+  //   }).then(resp => resp.json())
+  // }
+
 
   static getMovies = (url = this.moviesURL) =>
     fetch(url)
@@ -15,7 +36,7 @@ class API {
       .then(resp => resp.json())
 
   // this is to be changed once user login becomes a thing
-  static getUser = (id = 2) =>
+  static getUser = (id = 1) =>
     fetch(this.usersURL + `/${id}`)
       .then(resp => resp.json())
 
@@ -28,8 +49,13 @@ class API {
     }).then(resp => resp.json())
   }
 
-  static deleteRating = (userId, movieId, rating) => {
-    console.log('rating would clear now')
+  static deleteRating = (userId, movieId) => {
+    const data = { userId, movieId }
+    return fetch(this.deleteMovieURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(resp => resp.json())
   }
 
   static getUserMovieRating = (userId, movieId) =>
