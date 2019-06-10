@@ -10,9 +10,13 @@ class API {
     fetch(url)
       .then(resp => resp.json())
 
+  static getMovie = movieId =>
+    fetch(this.moviesURL + `/${movieId}`)
+      .then(resp => resp.json())
+
   // this is to be changed once user login becomes a thing
-  static getUser = () =>
-    fetch(this.usersURL + "/2")
+  static getUser = (id = 2) =>
+    fetch(this.usersURL + `/${id}`)
       .then(resp => resp.json())
 
   static postRating = (userId, movieId, rating) => {
@@ -22,6 +26,10 @@ class API {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     }).then(resp => resp.json())
+  }
+
+  static deleteRating = (userId, movieId, rating) => {
+    console.log('rating would clear now')
   }
 
   static getUserMovieRating = (userId, movieId) =>
@@ -34,6 +42,7 @@ class API {
           ? movieWatched.rating
           : 0
       })
+
 }
 
 export default API

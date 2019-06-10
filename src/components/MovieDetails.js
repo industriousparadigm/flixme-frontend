@@ -1,18 +1,13 @@
-import React, { } from 'react'
+import React from 'react'
 import { Image, Header, Button, Rating, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import API from '../api/API'
 
-
-
 const MovieDetails = props => {
   const genericPosterURL = 'https://i.pinimg.com/originals/b3/5f/c9/b35fc9dee41f17718303d5a5ea11e0a4.jpg'
 
-  const { poster_path, title, release_date, overview } = props.movie
-  const { currentUser, userRating } = props
-
-  const handleRating = (event, { rating }) =>
-    API.postRating(currentUser.id, props.movie.id, rating)
+  const { id, poster_path, title, release_date, overview, current_user_rating } = props.movie
+  const { currentUser, userRating, handleRating } = props
 
   return (
     <div className="moviePage">
@@ -31,9 +26,10 @@ const MovieDetails = props => {
         <br />
         <Rating
           className='movieRating'
+          movieid={id}
           onRate={handleRating}
           maxRating={5}
-          defaultRating={userRating}
+          defaultRating={current_user_rating}
           icon='star'
           size='massive'
           clearable

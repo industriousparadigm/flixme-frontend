@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Route, Switch, Link } from 'react-router-dom'
-import { Menu, Icon } from 'semantic-ui-react'
 import '../App.css'
 import API from '../api/API'
 import MoviesContainer from './MoviesContainer'
@@ -8,37 +7,49 @@ import MovieDetails from './MovieDetails'
 import Choices from './Choices';
 import UserProfile from './UserProfile'
 
-
-// const onlyUnique = (value, index, self) => {
-//   return self.indexOf(value) === index;
-// }
-
 class App extends Component {
   state = {
     movies: [],
     searchTerm: '',
-    currentUser: null,
-    activeItem: null,
-    selectedMovie: null,
-    userRating: null
+    currentUser: null
   }
 
   componentDidMount() {
-    API.getMovies()
-      .then(this.renderMovies)
-    API.getUser()
-      .then(currentUser => {
-        this.setState({ currentUser })
-      })
+    API.getUser(2)
+      .then(currentUser => this.setState({ currentUser }))
+      .then(API.getMovies()
+        .then(this.renderMovies)
+      )
   }
 
   renderMovies = json => {
-    const movies = json
+    const movies = this.appendRatingsToMovies(json)
     this.setState({ movies })
   }
 
+  appendRatingsToMovies = json => {
+    const { currentUser } = this.state
+    json.forEach(movie => {
+      const movieWatched = currentUser.movies_watched.find(m => m.movie_id === movie.id)
+      movieWatched
+        ? this.appendRatingToMovie(movie, movieWatched.rating)
+        : this.appendRatingToMovie(movie, null)
+    })
+    return json
+  }
+
+  appendRatingToMovie = (movie, rating) => {
+    movie.current_user_rating = rating
+  }
+
   appendMovies = json => {
-    const movies = ([...this.state.movies].concat(json))
+    const movies = ([...this.state.movies].concat(this.appendRatingsToMovies(json)))
+    this.setState({ movies })
+  }
+
+  changeRating = (movieId, rating) => {
+    const movies = [...this.state.movies]
+    movies.find(m => m.id === movieId).current_user_rating = rating
     this.setState({ movies })
   }
 
@@ -49,9 +60,9 @@ class App extends Component {
         .then(this.renderMovies)
     } else {
       API.getMovies(API.searchURL + value)
-        .then(movies => {
-          movies !== undefined
-            ? this.setState({ movies })
+        .then(json => {
+          json !== undefined
+            ? this.renderMovies(json)
             : this.setState({ movies: [] })
         })
     }
@@ -63,40 +74,17 @@ class App extends Component {
       .then(this.appendMovies)
   }
 
-  handleItemClick = event => {
-    console.log(event.target)
+  handleRating = (event, { movieid, rating }) => {
+    API.postRating(this.state.currentUser.id, movieid, rating)
+      .then(this.changeRating(movieid, rating))
   }
 
   render() {
-    const { movies, searchTerm, activeItem, currentUser } = this.state
-    const { handleSearchChange, handleScroll } = this
+    const { movies, searchTerm, currentUser } = this.state
+    const { handleSearchChange, handleScroll, handleRating } = this
 
     return (
       <div className="App">
-        {/* <Menu className='App-navbar' compact icon='labeled' inverted>
-          <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClick}>
-            <Icon name='home' />
-            home
-          </Menu.Item>
-
-          <Menu.Item
-            name='film'
-            active={activeItem === 'film'}
-            onClick={this.handleItemClick}
-          >
-            <Icon name='film' />
-            movies
-        </Menu.Item>
-
-          <Menu.Item
-            name='user'
-            active={activeItem === 'user'}
-            onClick={this.handleItemClick}
-          >
-            <Icon name='user' />
-            profile
-        </Menu.Item>
-        </Menu> */}
         <header className="App-header">
           <Link to={'/'}><h1 id='flixme'>flix me</h1></Link>
         </header>
@@ -110,6 +98,7 @@ class App extends Component {
             <MoviesContainer
               {...props}
               movies={movies}
+              currentUser={currentUser}
               handleSearchChange={handleSearchChange}
               searchTerm={searchTerm}
               handleScroll={handleScroll}
@@ -117,27 +106,26 @@ class App extends Component {
           }
           />
           <Route
-            path='/movies/:id'
-            render={props => {
-              const id = parseInt(props.match.params.id, 10)
-              const movie = movies.find(movie => movie.id === id)
-              if (movies.length === 0) return <h1>Loading...</h1>
-              if (movies.length > 0 && movie === undefined) {
-                return <h1>movie not found</h1>
-              }
-              return <MovieDetails
-                movie={movie}
-                currentUser={currentUser}
-                userRating={0}
-                {...props}
-              />
-            }} />
-          <Route
             path='/users/:username'
             render={props => {
               return <UserProfile user={currentUser} {...props} />
               // const username = props.match.params.username
             }} />
+          <Route path='/movies/:id' render={props => {
+            const id = parseInt(props.match.params.id, 10)
+            const movie = movies.find(m => m.id === id)
+            if (movies.length === 0) return <h1>Loading...</h1>
+            if (movies.length > 0 && movie === undefined) {
+              return <h1 style={{ color: 'white' }}>movie not found</h1>
+            }
+
+            return <MovieDetails
+              movie={movie}
+              currentUser={currentUser}
+              handleRating={handleRating}
+              {...props}
+            />
+          }} />
 
           <Route component={props => <img src='http://www.404lovers.com/wp-content/uploads/2014/08/batman-3ddotde-1170x563.jpg' alt='404 not found'></img>} />
         </Switch>

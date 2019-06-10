@@ -5,7 +5,7 @@ import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroller'
 
 const MoviesContainer = props => {
-  const { movies, handleSearchChange, searchTerm, handleScroll } = props
+  const { movies, handleSearchChange, searchTerm, handleScroll, currentUser } = props
 
   const renderCards = () =>
     movies.length > 0 && movies.map(movie =>
