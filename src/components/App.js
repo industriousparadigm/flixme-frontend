@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Route, Switch, Link } from 'react-router-dom'
+import { Route, Switch, Link, withRouter } from 'react-router-dom'
 import { Menu, Icon } from 'semantic-ui-react'
 import '../App.css'
 import API from '../api/API'
@@ -13,6 +13,7 @@ import SignIn from './SignIn'
 class App extends Component {
   state = {
     movies: [],
+    page: 1,
     searchTerm: '',
     currentUser: null,
     activeItem: ''
@@ -20,21 +21,31 @@ class App extends Component {
 
   signIn = userId =>
     API.getUser(userId)
-      .then(currentUser => this.setState({ currentUser }, () => {
+      .then(currentUser => this.setState({ currentUser, page: 1 }, () => {
         API.getMovies()
           .then(this.renderMovies)
       }))
 
-  signOut = () => this.setState({ currentUser: null })
+  signOut = () => {
+    this.setState({ currentUser: null })
+    localStorage.removeItem('token')
+  }
 
   componentDidMount() {
-    API.getMovies()
-      .then(this.renderMovies)
+    API.validate()
+      .then(data => {
+        if (data.error) {
+          API.getMovies()
+            .then(this.renderMovies)
+        } else {
+          this.signIn(data.userId)
+        }
+      })
   }
 
   renderMovies = json => {
     const movies = this.appendRatingsToMovies(json)
-    this.setState({ movies })
+    this.setState({ movies, page: 1 })
   }
 
   appendRatingsToMovies = json => {
@@ -84,9 +95,11 @@ class App extends Component {
     this.setState({ searchTerm: value })
   }
 
-  handleScroll = page => {
-    !this.state.searchTerm && API.getMovies(API.moviesURL + `?page=${page}`)
+  handleScroll = () => {
+    const { page } = this.state
+    !this.state.searchTerm && API.getMovies(API.moviesURL + `?page=${page + 1}`)
       .then(this.appendMovies)
+    this.setState({ page: this.state.page + 1 })
   }
 
   handleRating = (event, { movieid, rating }) => {
@@ -107,20 +120,38 @@ class App extends Component {
     }
   }
 
+  // handleSignOut = () => {
+  //   this.signOut()
+  // }
+
   render() {
-    const { movies, searchTerm, currentUser, activeItem } = this.state
+    const { movies, page, searchTerm, currentUser, activeItem } = this.state
     const { handleSearchChange, handleScroll, handleRating, handleWatched, signIn, signOut } = this
 
     return (
       <div className="App">
         <Menu icon='labeled' vertical floated='right' className='iconMenu'>
+          {
+            !currentUser && <Menu.Item
+              name='signup'
+              active={activeItem === 'signup'}
+              as={Link} to={'/signup'}
+            >
+              <Icon name='signup' />
+              sign up
+          </Menu.Item>
+          }
           <Menu.Item
             name='user'
             active={activeItem === 'user'}
-            as={Link} to='/signin'
+            onClick={() => {
+              currentUser
+                ? signOut()
+                : this.props.history.push('/signin')
+            }}
           >
             <Icon name='user' />
-            {currentUser ? 'sign out' : 'sign in'}
+            {currentUser ? `${currentUser.name.split(' ')[0]} - sign out` : 'sign in'}
           </Menu.Item>
           <Menu.Item
             name='film'
@@ -129,14 +160,6 @@ class App extends Component {
           >
             <Icon name='film' />
             movies
-          </Menu.Item>
-          <Menu.Item
-            name='help'
-            active={activeItem === 'help'}
-            as={Link} to={API.selfHelpURL}
-          >
-            <Icon name='help' />
-            help me!
           </Menu.Item>
         </Menu>
         <header className="App-header">
@@ -155,6 +178,7 @@ class App extends Component {
               handleSearchChange={handleSearchChange}
               searchTerm={searchTerm}
               handleScroll={handleScroll}
+              page={page}
             />
           }
           />
@@ -181,9 +205,7 @@ class App extends Component {
             />
           }} />
           <Route exact path='/signin' render={props => <SignIn {...props} signIn={signIn} />} />
-          <Route exact path='/signup' render={props => <SignUp {...props} />} />
-
-
+          <Route exact path='/signup' render={props => <SignUp {...props} signIn={signIn} />} />
           <Route component={props => <img src='http://www.404lovers.com/wp-content/uploads/2014/08/batman-3ddotde-1170x563.jpg' alt='404 not found'></img>} />
         </Switch>
       </div>
@@ -191,4 +213,4 @@ class App extends Component {
   }
 }
 
-export default App
+export default withRouter(App)

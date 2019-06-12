@@ -5,7 +5,7 @@ import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroller'
 
 const MoviesContainer = props => {
-  const { movies, handleSearchChange, searchTerm, handleScroll, currentUser } = props
+  const { movies, page, handleSearchChange, searchTerm, handleScroll } = props
 
   const renderCards = () =>
     movies.length > 0 && movies.map(movie =>
@@ -22,11 +22,11 @@ const MoviesContainer = props => {
         defaultValue={searchTerm}
       />
       <InfiniteScroll
-        pageStart={1}
+        pageStart={page}
         initialLoad={false}
         loadMore={handleScroll}
         hasMore={true || false}
-        loader={!searchTerm ? <div className="loader" key={0}>Loading ...</div> : null}
+        loader={!searchTerm ? <div className="loader" key={0}>Loading...</div> : null}
       >
         <Card.Group itemsPerRow={5} className='moviesContainer' centered >
           {renderCards()}

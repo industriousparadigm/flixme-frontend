@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom'
 
 
 const UserProfile = props => {
-  const { firstName, lastName, avatarUrl } = props.user
+  const { first_name, last_name, avatar_url } = props.user
 
   return (
     <div className="userPage">
       <section className='userDetails'>
-        <Image src={avatarUrl} size='medium' wrapped />
-        <Header as='h1' >{firstName + ' ' + lastName}</Header>
+        <Image src={avatar_url} size='medium' wrapped />
+        <Header as='h1' >{first_name + ' ' + last_name}</Header>
       </section>
       <section className='userActivity'>
         <section className='userRecentMovies'>

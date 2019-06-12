@@ -17,7 +17,8 @@ const SignIn = props => {
           console.log(data.error)
         } else {
           console.log(data)
-          props.signIn(data.id).then(props.history.push('/'))
+          props.signIn(data.id).then(props.history.goBack())
+          localStorage.setItem('token', data.id)
         }
       })
   }
@@ -31,9 +32,9 @@ const SignIn = props => {
 
   return (
     <Form className='authForm' size='massive' onSubmit={handleSubmit}>
-      <Form.Field type='email' control='input' onChange={handleFormChange}>
+      <Form.Field required type='email' control='input' onChange={handleFormChange} autoComplete='off'>
       </Form.Field>
-      <Form.Field type='password' control='input' onChange={handleFormChange}>
+      <Form.Field required type='password' control='input' onChange={handleFormChange} autoComplete='off'>
       </Form.Field>
       <Button type='submit' size='massive' >sign in</Button>
     </Form>

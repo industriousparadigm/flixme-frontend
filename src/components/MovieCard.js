@@ -6,7 +6,7 @@ const MovieCard = props => {
   const posterURL = 'http://image.tmdb.org/t/p/w300'
   const genericPosterURL = 'https://i.pinimg.com/originals/b3/5f/c9/b35fc9dee41f17718303d5a5ea11e0a4.jpg'
 
-  const { id, poster_path, title } = props.movie
+  const { id, poster_path } = props.movie
 
   return (
     <Card link as={Link} to={`/movies/${id}`}>

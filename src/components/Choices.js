@@ -7,10 +7,10 @@ const Choices = props => {
   return (
     <Fragment>
       <Link to={'/movies'}>
-        <Button size='massive'>rate a movie</Button>
+        <Button size='massive'>movies</Button>
       </Link>
-      <Button size='massive'>get rec(t)</Button>
-      <Button size='massive'>find people</Button>
+      <Button size='massive'>recommendations</Button>
+      <Button size='massive'>people</Button>
     </Fragment>
   )
 }

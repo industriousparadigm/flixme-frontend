@@ -6,6 +6,7 @@ class API {
   static rateMovieURL = this.baseURL + '/rate_movie'
   static deleteMovieURL = this.baseURL + '/forget_movie'
   static signInURL = this.baseURL + '/signin'
+  static validateURL = this.baseURL + '/validate'
 
   static posterURL = 'http://image.tmdb.org/t/p/w300'
   static selfHelpURL = 'https://www.youtube.com/results?search_query=selfhelp'
@@ -19,13 +20,20 @@ class API {
     }).then(resp => resp.json())
   }
 
-  // static validate () {
-  //   const token = localStorage.getItem('token')
-  //   return fetch(this.validateUrl, {
-  //     headers: { Authorization: token },
-  //   }).then(resp => resp.json())
-  // }
+  static signUp(user) {
+    return fetch(this.usersURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user)
+    }).then(resp => resp.json())
+  }
 
+  static validate() {
+    const token = localStorage.getItem('token')
+    return fetch(this.validateURL, {
+      headers: { Authorization: token },
+    }).then(resp => resp.json())
+  }
 
   static getMovies = (url = this.moviesURL) =>
     fetch(url)

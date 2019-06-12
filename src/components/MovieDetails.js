@@ -7,7 +7,7 @@ const MovieDetails = props => {
   const genericPosterURL = 'https://i.pinimg.com/originals/b3/5f/c9/b35fc9dee41f17718303d5a5ea11e0a4.jpg'
 
   const { id, poster_path, title, release_date, overview, current_user_rating } = props.movie
-  const { handleRating, handleWatched, currentUser } = props
+  const { handleRating, handleWatched, currentUser, history } = props
 
   return (
     <div className="moviePage">
@@ -45,7 +45,7 @@ const MovieDetails = props => {
           disabled={!currentUser ? true : false}
         />
         <br /> <br />
-        <Button icon as={Link} to={`/movies`}>
+        <Button icon onClick={history.goBack}>
           <Icon name='left arrow' />
         </Button>
       </section>
