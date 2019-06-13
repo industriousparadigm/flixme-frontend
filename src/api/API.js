@@ -44,8 +44,12 @@ class API {
       .then(resp => resp.json())
 
   // this is to be changed once user login becomes a thing
-  static getUser = (id = 1) =>
+  static getUser = (id) =>
     fetch(this.usersURL + `/${id}`)
+      .then(resp => resp.json())
+
+  static getUsers = () =>
+    fetch(this.usersURL)
       .then(resp => resp.json())
 
   static postRating = (userId, movieId, rating) => {
@@ -76,6 +80,15 @@ class API {
           ? movieWatched.rating
           : 0
       })
+
+  static request_friendship = (requesterId, receiverId) => {
+    const data = { requesterId, receiverId }
+    fetch(this.friendRequestURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(resp => resp.json())
+  }
 
 }
 

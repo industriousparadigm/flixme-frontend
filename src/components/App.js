@@ -4,6 +4,7 @@ import { Menu, Icon } from 'semantic-ui-react'
 import '../App.css'
 import API from '../api/API'
 import MoviesContainer from './MoviesContainer'
+import UsersContainer from './UsersContainer'
 import MovieDetails from './MovieDetails'
 import Choices from './Choices';
 import UserProfile from './UserProfile'
@@ -13,17 +14,38 @@ import SignIn from './SignIn'
 class App extends Component {
   state = {
     movies: [],
-    page: 1,
+    moviesPage: 1,
     searchTerm: '',
+    users: [],
     currentUser: null,
-    activeItem: ''
+    currentUserMovies: [],
+    selectedUser: null,
+    selectedMovie: null
+  }
+
+  componentDidMount() {
+    API.validate().then(data =>
+      !data.error
+        ? this.initializeWithUser(data.userId)
+        : this.initializeWithoutUser()
+    )
+  }
+
+  initializeWithUser = userId => {
+    this.initializeWithoutUser()
+    this.signIn(userId)
+  }
+
+  initializeWithoutUser = () => {
+    API.getMovies().then(this.loadMovies)
+    API.getUsers().then(this.loadUsers)
   }
 
   signIn = userId =>
     API.getUser(userId)
-      .then(currentUser => this.setState({ currentUser, page: 1 }, () => {
-        API.getMovies()
-          .then(this.renderMovies)
+      .then(currentUser => this.setState({ currentUser, moviesPage: 1 }, () => {
+        this.loadCurrentUserMovies()
+        this.loadCurrentUserFriends()
       }))
 
   signOut = () => {
@@ -31,51 +53,54 @@ class App extends Component {
     localStorage.removeItem('token')
   }
 
-  componentDidMount() {
-    API.validate()
-      .then(data => {
-        if (data.error) {
-          API.getMovies()
-            .then(this.renderMovies)
-        } else {
-          this.signIn(data.userId)
-        }
-      })
+  loadCurrentUserMovies = () =>
+    this.state.currentUser.movies_watched.forEach(movie => {
+      API.getMovie(movie.movie_id)
+        .then(movie_json => {
+          movie_json.current_user_rating = movie.rating
+          this.setState({ currentUserMovies: [...this.state.currentUserMovies, movie_json] })
+        })
+    })
+
+  loadCurrentUserFriends = () => {
+    const { friends } = this.state.currentUser
+    friends.size > 0 && friends.forEach(user => {
+      API.getUser(user.id)
+        .then(user_json => this.setState({ currentUserFriends: [...this.state.currentUserFriends, user_json] }))
+    })
   }
 
-  renderMovies = json => {
+  loadMovies = json => { // puts 20 movies in state
     const movies = this.appendRatingsToMovies(json)
-    this.setState({ movies, page: 1 })
+    this.setState({ movies, moviesPage: 1 })
   }
 
-  appendRatingsToMovies = json => {
+  loadUsers = users => this.setState({ users }) // puts ALL users in state
+
+  loadAllUsersMovies = user => {
+
+  }
+
+  appendRatingsToMovies = movies => {
     const { currentUser } = this.state
     currentUser
-      ? json.forEach(movie => {
+      ? movies.forEach(movie => {
         const movieWatched = currentUser.movies_watched.find(m => m.movie_id === movie.id)
         movieWatched
           ? this.appendRatingToMovie(movie, movieWatched.rating)
           : this.appendRatingToMovie(movie, null)
       })
-      : json.forEach(movie =>
+      : movies.forEach(movie =>
         this.appendRatingToMovie(movie, null)
       )
 
-    return json
+    return movies
   }
 
-  appendRatingToMovie = (movie, rating) => {
-    movie.current_user_rating = rating
-  }
+  appendRatingToMovie = (movie, rating) => movie.current_user_rating = rating
 
   appendMovies = json => {
     const movies = ([...this.state.movies].concat(this.appendRatingsToMovies(json)))
-    this.setState({ movies })
-  }
-
-  changeRating = (movieId, rating) => {
-    const movies = [...this.state.movies]
-    movies.find(m => m.id === movieId).current_user_rating = rating
     this.setState({ movies })
   }
 
@@ -83,12 +108,12 @@ class App extends Component {
     // return default movies in case search is empty or spaces only
     if (value.replace(/\s/g, "").length === 0) {
       API.getMovies()
-        .then(this.renderMovies)
+        .then(this.loadMovies)
     } else {
       API.getMovies(API.searchURL + value)
         .then(json => {
           json !== undefined
-            ? this.renderMovies(json)
+            ? this.loadMovies(json)
             : this.setState({ movies: [] })
         })
     }
@@ -96,10 +121,10 @@ class App extends Component {
   }
 
   handleScroll = () => {
-    const { page } = this.state
-    !this.state.searchTerm && API.getMovies(API.moviesURL + `?page=${page + 1}`)
+    const { moviesPage } = this.state
+    !this.state.searchTerm && API.getMovies(API.moviesURL + `?page=${moviesPage + 1}`)
       .then(this.appendMovies)
-    this.setState({ page: this.state.page + 1 })
+    this.setState({ moviesPage: moviesPage + 1 })
   }
 
   handleRating = (event, { movieid, rating }) => {
@@ -107,55 +132,83 @@ class App extends Component {
       .then(this.changeRating(movieid, rating))
   }
 
-  handleWatched = movieId => {
-    const { currentUser, movies } = this.state
-    if (movies.find(m => m.id === movieId).current_user_rating !== null) {
-      console.log('deleted the watch')
-      API.deleteRating(currentUser.id, movieId)
-        .then(this.changeRating(movieId, null))
+  handleWatched = movie => { // handles "mark as seen" button
+    const { currentUser } = this.state
+    if (movie.current_user_rating !== null) { // if movie seen
+      API.deleteRating(currentUser.id, movie.id)
+        .then(this.changeRating(movie, null)) // mark as not seen and delete rating
     } else {
-      console.log('created a watch')
-      API.postRating(currentUser.id, movieId, 0)
-        .then(this.changeRating(movieId, 0))
+      API.postRating(currentUser.id, movie.id, 0)
+        .then(this.changeRating(movie, 0)) // or just mark as seen without rating
     }
   }
 
-  // handleSignOut = () => {
-  //   this.signOut()
-  // }
+  changeRating = (movie, rating) => {
+    // first change the rating in overall movies state array
+    const movies = [...this.state.movies]
+    movie.current_user_rating = rating
+    this.setState({ movies })
+    // then add or update rating in currentUserMovies state array
+    const currentUserMovies = [...this.state.currentUserMovies]
+    const foundMovie = currentUserMovies.find(m => m.id === movieId)
+    foundMovie
+      ? foundMovie.current_user_rating = rating // update if found
+      : currentUserMovies.push(movie) // add that movie if not rated yet
+    this.setState({ currentUserMovies })
+  }
+
+  handleUserClick = user => {
+    this.setState({ selectedUser: user }, () =>
+      this.props.history.push(`/users/${user.id}`)
+    )
+  }
+
+  addToUserMovies = movieId => { // work in progress, should move movie to end of array if already seen.
+    const movies = this.state.currentUserMovies
+    movies.includes(movie => movie.id === movieId)
+    API.getMovie(movieId).then(movie =>
+      this.setState({ currentUserMovies: [...movies, movie] })
+    )
+  }
 
   render() {
-    const { movies, page, searchTerm, currentUser, activeItem } = this.state
-    const { handleSearchChange, handleScroll, handleRating, handleWatched, signIn, signOut } = this
+    const { history } = this.props
+    const { movies, moviesPage, searchTerm, currentUser, currentUserMovies, users } = this.state
+    const { handleSearchChange, handleScroll, handleRating, handleWatched, handleUserClick, signIn, signOut } = this
 
     return (
       <div className="App">
         <Menu icon='labeled' vertical floated='right' className='iconMenu'>
           {
-            !currentUser && <Menu.Item
-              name='signup'
-              active={activeItem === 'signup'}
-              as={Link} to={'/signup'}
-            >
-              <Icon name='signup' />
-              sign up
+            !currentUser
+              ? <Menu.Item
+                name='signup'
+                as={Link} to={'/signup'}
+              >
+                <Icon name='signup' />
+                sign up
+          </Menu.Item>
+              : <Menu.Item
+                name='signout'
+                as={Link} to={'/'}
+                onClick={signOut}
+              >
+                <Icon name='cut' />
+                sign out
           </Menu.Item>
           }
           <Menu.Item
             name='user'
-            active={activeItem === 'user'}
             onClick={() => {
               currentUser
-                ? signOut()
-                : this.props.history.push('/signin')
-            }}
-          >
+                ? history.push(`/users/${currentUser.id}`)
+                : history.push('/signin')
+            }}>
             <Icon name='user' />
-            {currentUser ? `${currentUser.name.split(' ')[0]} - sign out` : 'sign in'}
+            {currentUser ? `${currentUser.name.split(' ')[0]}` : 'sign in'}
           </Menu.Item>
           <Menu.Item
             name='film'
-            active={activeItem === 'film'}
             as={Link} to='/movies'
           >
             <Icon name='film' />
@@ -167,9 +220,7 @@ class App extends Component {
         </header>
         <Switch>
           <Route exact path='/' render={props =>
-            <Choices
-              {...props}
-            />
+            <Choices {...props} />
           } />
           <Route exact path='/movies' render={props =>
             <MoviesContainer
@@ -178,19 +229,32 @@ class App extends Component {
               handleSearchChange={handleSearchChange}
               searchTerm={searchTerm}
               handleScroll={handleScroll}
-              page={page}
+              page={moviesPage}
             />
           }
           />
-          <Route
-            path='/users/:username'
-            render={props => {
-              return <UserProfile user={currentUser} {...props} />
-              // const username = props.match.params.username
-            }} />
+          <Route exact path='/users' render={props =>
+            <UsersContainer
+              {...props}
+              users={users}
+              handleUserClick={handleUserClick}
+            />
+          }
+          />
+          <Route path='/users/:id' render={props => {
+            const id = parseInt(props.match.params.id, 10)
+            const user = users.find(u => u.id === id)
+            return <UserProfile
+              user={user}
+              users={users}
+              movies={currentUserMovies}
+              currentUser={currentUser}
+              {...props} />
+          }} />
           <Route path='/movies/:id' render={props => {
             const id = parseInt(props.match.params.id, 10)
-            const movie = movies.find(m => m.id === id)
+            let movie = movies.find(m => m.id === id)
+            if (!movie) { movie = currentUserMovies.find(m => m.id === id) }
             if (movies.length === 0) return <h1>Loading...</h1>
             if (movies.length > 0 && movie === undefined) {
               return <h1 style={{ color: 'white' }}>movie not found</h1>

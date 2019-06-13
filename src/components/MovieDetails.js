@@ -7,7 +7,7 @@ const MovieDetails = props => {
   const genericPosterURL = 'https://i.pinimg.com/originals/b3/5f/c9/b35fc9dee41f17718303d5a5ea11e0a4.jpg'
 
   const { id, poster_path, title, release_date, overview, current_user_rating } = props.movie
-  const { handleRating, handleWatched, currentUser, history } = props
+  const { handleRating, handleWatched, movie, currentUser, history } = props
 
   return (
     <div className="moviePage">
@@ -23,7 +23,7 @@ const MovieDetails = props => {
         <p>{overview}</p>
         <Button
           disabled={!currentUser ? true : false}
-          onClick={() => handleWatched(id)}>
+          onClick={() => handleWatched(movie)}>
           {
             current_user_rating === null
               ? 'Mark as seen'

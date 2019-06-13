@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Arvo&display=swap');
 
 body .App {
+  color: white;
   text-align: center;
   min-height: 100vh;
   background: url('./img/kilyan-sockalingum-478724-unsplash.jpg') no-repeat
@@ -89,6 +90,47 @@ a #flixme {
   background: rgba(255, 255, 255, 1);
   padding: 1%;
   border-radius: 5px;
+}
+
+.userPage {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  background: rgba(0, 0, 19, 0.6);
+  padding: 2%;
+}
+
+.userDetails {
+  /* background-color: black; */
+  width: 30%;
+}
+
+.userActivity {
+  /* background-color: gray; */
+  width: 60%;
+}
+
+.userProfileAvatar {
+  background-color: white !important;
+}
+
+.userCard {
+  color: white;
+}
+
+.userCard:hover {
+  color: rgb(212, 191, 191);
+}
+
+.friendCard,
+.userCircle {
+  margin: 1vh;
+  background-color: white !important;
+}
+
+.userOptions {
+  margin-left: auto;
 }
 
 .userPage .header {
