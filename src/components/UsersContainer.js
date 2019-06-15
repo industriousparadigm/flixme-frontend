@@ -7,7 +7,7 @@ const UsersContainer = props => {
 
   const renderUserCards = () =>
     users.length > 0 && users.map(user =>
-      <Link className='userCard' key={user.id} to={`users/${user.id}`}>
+      <Link className='userCard' key={user.id} to={`/users/${user.id}`}>
         <Image className='userCircle' circular src={user.avatar_url} size='tiny' wrapped onClick={() => handleUserClick(user)} />
         <p>{user.first_name}</p>
       </Link>

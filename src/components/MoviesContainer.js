@@ -5,10 +5,10 @@ import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroller'
 
 const MoviesContainer = props => {
-  const { movies, page, handleSearchChange, searchTerm, handleScroll } = props
+  const { movies, page, handleSearchChange, searchTerm, handleScroll, PAGE_SIZE } = props
 
   const renderCards = () =>
-    movies.length > 0 && movies.map(movie =>
+    movies.length > 0 && movies.slice(0, PAGE_SIZE * page).map(movie =>
       <MovieCard key={movie.id} movie={movie} />
     )
 

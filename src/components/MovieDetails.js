@@ -1,13 +1,41 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Image, Header, Button, Rating, Icon } from 'semantic-ui-react'
-import { Link } from 'react-router-dom'
 import API from '../api/API'
 
 const MovieDetails = props => {
-  const genericPosterURL = 'https://i.pinimg.com/originals/b3/5f/c9/b35fc9dee41f17718303d5a5ea11e0a4.jpg'
+  const [movie, setMovie] = useState(null)
+  const [userRating, setUserRating] = useState(null)
 
-  const { id, poster_path, title, release_date, overview, current_user_rating } = props.movie
-  const { handleRating, handleWatched, movie, currentUser, history } = props
+  useEffect(() => {
+    console.log('*async* MovieDetails fetch hook')
+    API.getMovie(props.movieId)
+      .then(setMovie)
+  }, [props.movieId])
+
+  const { poster_path, title, release_date, overview } = movie || {}
+  const { currentUser, history } = props
+
+  const handleRating = (event, { rating }) =>
+    API.postRating(currentUser.id, movie.id, rating) // change rating in back end
+      .then(() => setUserRating(rating)) // change rating in the dom
+
+  const handleWatched = () => {
+    userRating === null
+      ? API.postRating(currentUser.id, movie.id, 0)
+        .then(setUserRating(0))
+      : API.deleteRating(currentUser.id, movie.id)
+        .then(setUserRating(null))
+  }
+
+  useEffect(() => {
+    console.log('MovieDetails loadCurrentUser hook')
+    let userMovie
+    if (currentUser) { userMovie = currentUser.movies.find(m => m.id === props.movieId) }
+    if (userMovie) setUserRating(userMovie.user_rating)
+  }, [currentUser])
+
+
+  if (!movie) return <h1>loading</h1>
 
   return (
     <div className="moviePage">
@@ -15,7 +43,7 @@ const MovieDetails = props => {
         <Image src={
           poster_path
             ? API.posterURL + poster_path
-            : genericPosterURL
+            : API.genericPosterURL
         } inline floated='left' rounded size='huge' ></Image>
       </section>
       <section className='movieInfo'>
@@ -23,9 +51,9 @@ const MovieDetails = props => {
         <p>{overview}</p>
         <Button
           disabled={!currentUser ? true : false}
-          onClick={() => handleWatched(movie)}>
+          onClick={handleWatched}>
           {
-            current_user_rating === null
+            userRating === null
               ? 'Mark as seen'
               : 'Mark as NOT seen'
           }
@@ -34,11 +62,10 @@ const MovieDetails = props => {
         <br />
         <Rating
           className='movieRating'
-          movieid={id}
           onRate={handleRating}
           maxRating={5}
           // defaultRating={current_user_rating ? current_user_rating : 0}
-          rating={current_user_rating ? current_user_rating : 0}
+          rating={userRating}
           icon='star'
           size='massive'
           clearable

@@ -7,9 +7,11 @@ class API {
   static deleteMovieURL = this.baseURL + '/forget_movie'
   static signInURL = this.baseURL + '/signin'
   static validateURL = this.baseURL + '/validate'
+  static friendRequestURL = this.baseURL + '/add_friend'
+  static friendDeletionURL = this.baseURL + '/delete_friend'
 
   static posterURL = 'http://image.tmdb.org/t/p/w300'
-  static selfHelpURL = 'https://www.youtube.com/results?search_query=selfhelp'
+  static genericPosterURL = 'https://i.pinimg.com/originals/b3/5f/c9/b35fc9dee41f17718303d5a5ea11e0a4.jpg'
 
 
   static signIn(user) {
@@ -70,26 +72,23 @@ class API {
     }).then(resp => resp.json())
   }
 
-  static getUserMovieRating = (userId, movieId) =>
-    fetch(this.usersURL + `/${userId}`)
-      .then(resp => resp.json())
-      .then(user => {
-        const movieWatched = user.movies_watched.find(mw => mw.movie_id === movieId)
-        movieWatched && console.log(movieWatched.rating)
-        return movieWatched
-          ? movieWatched.rating
-          : 0
-      })
-
-  static request_friendship = (requesterId, receiverId) => {
+  static initiateFriendship = (requesterId, receiverId) => {
     const data = { requesterId, receiverId }
-    fetch(this.friendRequestURL, {
+    return fetch(this.friendRequestURL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     }).then(resp => resp.json())
   }
 
+  static terminateFriendship = (requesterId, receiverId) => {
+    const data = { requesterId, receiverId }
+    return fetch(this.friendDeletionURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(resp => resp.json())
+  }
 }
 
 export default API
