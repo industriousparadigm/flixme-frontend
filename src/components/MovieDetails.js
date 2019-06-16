@@ -7,13 +7,12 @@ const MovieDetails = props => {
   const [userRating, setUserRating] = useState(null)
 
   useEffect(() => {
-    console.log('*async* MovieDetails fetch hook')
     API.getMovie(props.movieId)
       .then(setMovie)
   }, [props.movieId])
 
   const { poster_path, title, release_date, overview, credits, runtime, genres } = movie || {}
-  const { currentUser, reloadUser, history } = props
+  const { movieId, users, currentUser, reloadUser, history } = props
 
   const handleRating = (event, { rating }) =>
     API.postRating(currentUser.id, movie.id, rating) // change rating in back end
@@ -33,14 +32,13 @@ const MovieDetails = props => {
   }
 
   useEffect(() => {
-    console.log('MovieDetails loadCurrentUser hook')
     let userMovie
     if (currentUser) { userMovie = currentUser.movies.find(m => m.id === props.movieId) }
     if (userMovie) setUserRating(userMovie.user_rating)
-  }, [currentUser])
+  }, [currentUser, props.movieId])
 
 
-  if (!movie) return <h1>loading</h1>
+  if (!movie) return <Image src='https://i.pinimg.com/originals/42/a0/c8/42a0c868fad26ccebf123244cf6da8b5.jpg' centered></Image>
 
   return (
     <div className="moviePage">
@@ -53,10 +51,10 @@ const MovieDetails = props => {
       </section>
       <section className='movieInfo'>
         <Header as='h1' >{`${title} (${release_date.slice(0, 4)})`}</Header>
-        <p>{credits.cast.slice(0, 4).map(actor => actor.name).join(', ')}</p>
-        <p>{overview}</p>
-        <p>{genres.map(genre => genre.name).join(', ')}</p>
-        <p>{runtime ? `${runtime}m` : null}</p>
+        <p className='movieCast'>{credits.cast.slice(0, 4).map(actor => actor.name).join(', ')}</p>
+        <p className='movieOverview'>{overview}</p>
+        <p className='movieGenres'>{genres.map(genre => genre.name).join(', ')}</p>
+        <p className='movieRuntime'>{runtime ? `${runtime}m` : null}</p>
         <Button
           disabled={!currentUser ? true : false}
           onClick={handleWatched}>
@@ -72,7 +70,6 @@ const MovieDetails = props => {
           className='movieRating'
           onRate={handleRating}
           maxRating={5}
-          // defaultRating={current_user_rating ? current_user_rating : 0}
           rating={userRating}
           icon='star'
           size='massive'

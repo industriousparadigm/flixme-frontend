@@ -14,7 +14,7 @@ const UsersContainer = props => {
     )
 
   return (
-    <Card.Group itemsPerRow={5} className='usersContainer' centered >
+    <Card.Group className='usersContainer' centered>
       {renderUserCards()}
     </Card.Group>
   )

@@ -11,13 +11,13 @@ const UserProfile = props => {
 
   useEffect(() => {
     console.log('UserDetails set user hook')
-    setUser(props.users.find(u => props.userId === u.id))
+    setUser(props.users.find(user => props.userId === user.id))
     if (user) {
       setUserMovies(user.movies.slice(0, 5))
     }
   }, [props.userId, props.users, user, props.currentUser])
 
-  const { userId, users, currentUser, reloadUser, reloadCurrentUser, history } = props
+  const { userId, users, currentUserId, findUser, reloadUser, history } = props
 
   const renderMovieCards = () =>
     userMovies.map(movie =>
@@ -34,7 +34,7 @@ const UserProfile = props => {
 
   const isFriend = () => {
     let friendship = false
-    currentUser.friends.forEach(friend => {
+    findUser(currentUserId).friends.forEach(friend => {
       if (friend.id === user.id) { friendship = true }
     })
     return friendship
@@ -42,18 +42,17 @@ const UserProfile = props => {
 
   const handleFriendButton = () => {
     if (!isFriend()) { // create friendship in backend + refresh user's friends array
-      API.initiateFriendship(currentUser.id, user.id)
+      API.initiateFriendship(currentUserId, user.id)
         .then(reloadUsers)
     } else {
-      API.terminateFriendship(currentUser.id, user.id)
+      API.terminateFriendship(currentUserId, user.id)
         .then(reloadUsers)
     }
   }
 
   const reloadUsers = () => {
-    reloadUser(currentUser.id)
+    reloadUser(currentUserId)
     reloadUser(user.id)
-    reloadCurrentUser()
   }
 
 
@@ -65,6 +64,13 @@ const UserProfile = props => {
         <Image className='userProfileAvatar' circular src={user.avatar_url} size='medium' wrapped />
         <Header as='h1' >{user.first_name + ' ' + user.last_name}</Header>
         <p>watched {user.movies.length} movies</p>
+        <Button size='massive' icon onClick={() => history.goBack()}>
+          <Icon name='left arrow' />
+        </Button>
+        <Button size='massive' icon onClick={handleFriendButton} disabled={currentUserId === user.id ? true : false}>
+          {isFriend() ? 'remove friend' : 'add friend'}
+        </Button>
+
       </section>
       <section className='userActivity'>
         <section className='userRecentMovies'>
@@ -82,16 +88,8 @@ const UserProfile = props => {
         <br />
         <br />
       </section>
-      <section className='userOptions' >
-        <Button size='massive' icon onClick={() => history.push('/users')}>
-          <Icon name='left arrow' />
-        </Button>
-        <Button size='massive' icon onClick={handleFriendButton}>
-          {
-            isFriend() ? 'remove friend' : 'add friend'
-          }
-        </Button>
-      </section>
+      {/* <section className='userOptions' >
+      </section> */}
     </div>
   )
 }

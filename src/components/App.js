@@ -70,8 +70,10 @@ class App extends Component {
       })
 
   reloadCurrentUser = () =>
-    API.getUser(this.state.currentUser.id)
+    API.getUser(this.state.currentUserId)
       .then(user => this.setState({ currentUserId: user.id }))
+
+  findUser = userId => this.state.users.find(user => user.id === userId)
 
   handleSearchChange = (event, { value }) => {
     // return default movies in case search is empty or spaces only
@@ -97,51 +99,20 @@ class App extends Component {
     this.setState({ moviesPage: moviesPage + 1 })
   }
 
-  handleRating = (event, { movieid, rating }) => {
-    API.postRating(this.state.currentUser.id, movieid, rating)
-      .then(this.changeRating(movieid, rating))
-  }
-
-  handleWatched = movie => { // handles "mark as seen" button
-    const { currentUser } = this.state
-    if (movie.current_user_rating !== null) { // if movie seen
-      API.deleteRating(currentUser.id, movie.id)
-        .then(this.changeRating(movie, null)) // mark as not seen and delete rating
-    } else {
-      API.postRating(currentUser.id, movie.id, 0)
-        .then(this.changeRating(movie, 0)) // or just mark as seen without rating
-    }
-  }
-
-  changeRating = (movie, rating) => {
-    // first change the rating in overall movies state array
-    const movies = [...this.state.movies]
-    movie.current_user_rating = rating
-    this.setState({ movies })
-    // then add or update rating in currentUserMovies state array
-    const currentUserMovies = [...this.state.currentUserMovies]
-    const foundMovie = currentUserMovies.find(m => m.id === movie.id)
-    foundMovie
-      ? foundMovie.current_user_rating = rating // update if found
-      : currentUserMovies.push(movie) // add that movie if not rated yet
-    this.setState({ currentUserMovies })
-  }
-
   handleUserClick = user => {
     this.props.history.push(`/users/${user.id}`)
   }
 
   render() {
     const { history } = this.props
-    const { movies, moviesPage, searchTerm, currentUser, users } = this.state
+    const { movies, moviesPage, searchTerm, currentUserId, users } = this.state
     const {
       handleSearchChange,
       handleScroll,
-      handleRating,
-      handleWatched,
       handleUserClick,
       signIn,
       signOut,
+      findUser,
       reloadUser,
       reloadCurrentUser
     } = this
@@ -150,7 +121,7 @@ class App extends Component {
       <div className="App">
         <Menu icon='labeled' vertical floated='right' className='iconMenu'>
           {
-            !currentUser
+            !currentUserId
               ?
               <Menu.Item name='signup' as={Link} to={'/signup'}>
                 <Icon name='signup' />
@@ -166,12 +137,12 @@ class App extends Component {
           <Menu.Item
             name='user'
             onClick={() => {
-              currentUser
-                ? history.push(`/users/${currentUser.id}`)
+              currentUserId
+                ? history.push(`/users/${currentUserId}`)
                 : history.push('/signin')
             }}>
             <Icon name='user' />
-            {currentUser ? `${currentUser.name.split(' ')[0]}` : 'sign in'}
+            {currentUserId && users.length > 0 ? `${findUser(currentUserId).name.split(' ')[0]}` : 'sign in'}
           </Menu.Item>
           <Menu.Item name='film' as={Link} to='/movies'>
             <Icon name='film' />
@@ -207,29 +178,21 @@ class App extends Component {
           />
           <Route path='/users/:id' render={props => {
             const id = parseInt(props.match.params.id, 10)
-            // const user = users.find(u => u.id === id)
             return <UserProfile
               userId={id}
               users={users}
-              currentUser={currentUser}
-              reloadCurrentUser={reloadCurrentUser}
+              currentUserId={currentUserId}
+              findUser={findUser}
               reloadUser={reloadUser}
+              reloadCurrentUser={reloadCurrentUser}
               {...props} />
           }} />
           <Route path='/movies/:id' render={props => {
             const id = parseInt(props.match.params.id, 10)
-            // let movie = movies.find(m => m.id === id)
-            // if (!movie) { movie = currentUserMovies.find(m => m.id === id) }
-            // if (movies.length === 0) return <h1>Loading...</h1>
-            // if (movies.length > 0 && movie === undefined) {
-            //   return <h1 style={{ color: 'white' }}>movie not found</h1>
-            // }
-
             return <MovieDetails
               movieId={id}
-              currentUser={currentUser}
-              handleRating={handleRating}
-              handleWatched={handleWatched}
+              users={users}
+              currentUser={findUser(currentUserId)}
               reloadUser={reloadUser}
               {...props}
             />
