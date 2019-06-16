@@ -44,10 +44,7 @@ class App extends Component {
 
   signIn = userId =>
     API.getUser(userId)
-      .then(currentUser => this.setState({ currentUser, moviesPage: 1 }, () => {
-        // this.loadCurrentUserMovies()
-        // this.loadCurrentUserFriends()
-      }))
+      .then(currentUser => this.setState({ currentUser, moviesPage: 1 }))
 
   signOut = () => {
     this.setState({ currentUser: null })
@@ -71,6 +68,18 @@ class App extends Component {
   }
 
   loadUsers = users => this.setState({ users }) // puts ALL users in state
+
+  reloadUsers = (user_id_1, user_id_2) => {
+    const users = [
+      ...this.state.users.filter(u => u.id !== user_id_1 && u.id !== user_id_2)
+    ]
+    API.getUser(user_id_1).then(user => users.push(user))
+    API.getUser(user_id_2).then(user => users.push(user))
+      .then(this.setState({ users }))
+    API.getUser(this.state.currentUser.id)
+      .then(currentUser => this.setState({ currentUser }))
+      .then(() => console.log('current yser updated'))
+  }
 
   handleSearchChange = (event, { value }) => {
     // return default movies in case search is empty or spaces only
@@ -130,18 +139,19 @@ class App extends Component {
     this.props.history.push(`/users/${user.id}`)
   }
 
-  addToUserMovies = movieId => { // work in progress, should move movie to end of array if already seen.
-    const movies = this.state.currentUserMovies
-    movies.includes(movie => movie.id === movieId)
-    API.getMovie(movieId).then(movie =>
-      this.setState({ currentUserMovies: [...movies, movie] })
-    )
-  }
-
   render() {
     const { history } = this.props
     const { movies, moviesPage, searchTerm, currentUser, users } = this.state
-    const { handleSearchChange, handleScroll, handleRating, handleWatched, handleUserClick, signIn, signOut } = this
+    const {
+      handleSearchChange,
+      handleScroll,
+      handleRating,
+      handleWatched,
+      handleUserClick,
+      signIn,
+      signOut,
+      reloadUsers
+    } = this
 
     return (
       <div className="App">
@@ -209,6 +219,7 @@ class App extends Component {
               userId={id}
               users={users}
               currentUser={currentUser}
+              reloadUsers={reloadUsers}
               {...props} />
           }} />
           <Route path='/movies/:id' render={props => {
