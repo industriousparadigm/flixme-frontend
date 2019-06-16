@@ -17,7 +17,7 @@ class App extends Component {
     moviesPage: 1,
     searchTerm: '',
     users: [],
-    currentUser: null,
+    currentUserId: null,
   }
 
   PAGE_SIZE = 20
@@ -44,19 +44,11 @@ class App extends Component {
 
   signIn = userId =>
     API.getUser(userId)
-      .then(currentUser => this.setState({ currentUser, moviesPage: 1 }))
+      .then(user => this.setState({ currentUserId: user.id, moviesPage: 1 }))
 
   signOut = () => {
-    this.setState({ currentUser: null })
+    this.setState({ currentUserId: null })
     localStorage.removeItem('token')
-  }
-
-  loadCurrentUserFriends = () => {
-    const { friends } = this.state.currentUser
-    friends.size > 0 && friends.forEach(user => {
-      API.getUser(user.id)
-        .then(user_json => this.setState({ currentUserFriends: [...this.state.currentUserFriends, user_json] }))
-    })
   }
 
   // puts the top 20 movies in state and resets page count
@@ -69,17 +61,17 @@ class App extends Component {
 
   loadUsers = users => this.setState({ users }) // puts ALL users in state
 
-  reloadUsers = (user_id_1, user_id_2) => {
-    const users = [
-      ...this.state.users.filter(u => u.id !== user_id_1 && u.id !== user_id_2)
-    ]
-    API.getUser(user_id_1).then(user => users.push(user))
-    API.getUser(user_id_2).then(user => users.push(user))
-      .then(this.setState({ users }))
+  reloadUser = userId =>
+    API.getUser(userId)
+      .then(user => {
+        const users = [...this.state.users.filter(user => user.id !== userId)]
+        users.push(user)
+        this.setState({ users })
+      })
+
+  reloadCurrentUser = () =>
     API.getUser(this.state.currentUser.id)
-      .then(currentUser => this.setState({ currentUser }))
-      .then(() => console.log('current yser updated'))
-  }
+      .then(user => this.setState({ currentUserId: user.id }))
 
   handleSearchChange = (event, { value }) => {
     // return default movies in case search is empty or spaces only
@@ -150,7 +142,8 @@ class App extends Component {
       handleUserClick,
       signIn,
       signOut,
-      reloadUsers
+      reloadUser,
+      reloadCurrentUser
     } = this
 
     return (
@@ -219,7 +212,8 @@ class App extends Component {
               userId={id}
               users={users}
               currentUser={currentUser}
-              reloadUsers={reloadUsers}
+              reloadCurrentUser={reloadCurrentUser}
+              reloadUser={reloadUser}
               {...props} />
           }} />
           <Route path='/movies/:id' render={props => {
@@ -236,6 +230,7 @@ class App extends Component {
               currentUser={currentUser}
               handleRating={handleRating}
               handleWatched={handleWatched}
+              reloadUser={reloadUser}
               {...props}
             />
           }} />

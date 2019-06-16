@@ -12,19 +12,24 @@ const MovieDetails = props => {
       .then(setMovie)
   }, [props.movieId])
 
-  const { poster_path, title, release_date, overview } = movie || {}
-  const { currentUser, history } = props
+  const { poster_path, title, release_date, overview, credits, runtime, genres } = movie || {}
+  const { currentUser, reloadUser, history } = props
 
   const handleRating = (event, { rating }) =>
     API.postRating(currentUser.id, movie.id, rating) // change rating in back end
       .then(() => setUserRating(rating)) // change rating in the dom
+      .then(reloadUser(currentUser.id)) // reload the current user
 
   const handleWatched = () => {
     userRating === null
-      ? API.postRating(currentUser.id, movie.id, 0)
-        .then(setUserRating(0))
-      : API.deleteRating(currentUser.id, movie.id)
-        .then(setUserRating(null))
+      ? API.postRating(currentUser.id, movie.id, 0).then(() => {
+        setUserRating(0)
+        reloadUser(currentUser.id)
+      })
+      : API.deleteRating(currentUser.id, movie.id).then(() => {
+        setUserRating(null)
+        reloadUser(currentUser.id)
+      })
   }
 
   useEffect(() => {
@@ -48,7 +53,10 @@ const MovieDetails = props => {
       </section>
       <section className='movieInfo'>
         <Header as='h1' >{`${title} (${release_date.slice(0, 4)})`}</Header>
+        <p>{credits.cast.slice(0, 4).map(actor => actor.name).join(', ')}</p>
         <p>{overview}</p>
+        <p>{genres.map(genre => genre.name).join(', ')}</p>
+        <p>{runtime ? `${runtime}m` : null}</p>
         <Button
           disabled={!currentUser ? true : false}
           onClick={handleWatched}>
