@@ -194,6 +194,7 @@ class App extends Component {
               users={users}
               currentUser={findUser(currentUserId)}
               reloadUser={reloadUser}
+              reloadCurrentUser={reloadCurrentUser}
               {...props}
             />
           }} />
