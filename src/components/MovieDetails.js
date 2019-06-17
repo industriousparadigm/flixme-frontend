@@ -15,11 +15,12 @@ const MovieDetails = props => {
   const { movieId, users, currentUser, reloadUser, history } = props
 
   const handleRating = (event, { rating }) =>
-    API.postRating(currentUser.id, movie.id, rating) // change rating in back end
-      .then(() => setUserRating(rating)) // change rating in the dom
-      .then(reloadUser(currentUser.id)) // reload the current user
+    API.postRating(currentUser.id, movie.id, rating).then(() => { // change rating in back end
+      setUserRating(rating) // change rating in the dom
+      reloadUser(currentUser.id) // reload the user to reflect the change in his movies
+    })
 
-  const handleWatched = () => {
+  const handleWatched = () => // handles the "marked as seen" button
     userRating === null
       ? API.postRating(currentUser.id, movie.id, 0).then(() => {
         setUserRating(0)
@@ -29,7 +30,6 @@ const MovieDetails = props => {
         setUserRating(null)
         reloadUser(currentUser.id)
       })
-  }
 
   useEffect(() => {
     let userMovie
@@ -38,7 +38,8 @@ const MovieDetails = props => {
   }, [currentUser, props.movieId])
 
 
-  if (!movie) return <Image src='https://i.pinimg.com/originals/42/a0/c8/42a0c868fad26ccebf123244cf6da8b5.jpg' centered></Image>
+  // if (!movie) return <Image src='https://i.pinimg.com/originals/42/a0/c8/42a0c868fad26ccebf123244cf6da8b5.jpg' centered></Image>
+  if (!movie) return <h1>flixing...</h1>
 
   return (
     <div className="moviePage">
@@ -53,8 +54,8 @@ const MovieDetails = props => {
         <Header as='h1' >{`${title} (${release_date.slice(0, 4)})`}</Header>
         <p className='movieCast'>{credits.cast.slice(0, 4).map(actor => actor.name).join(', ')}</p>
         <p className='movieOverview'>{overview}</p>
-        <p className='movieGenres'>{genres.map(genre => genre.name).join(', ')}</p>
-        <p className='movieRuntime'>{runtime ? `${runtime}m` : null}</p>
+        <p className='movieGenres'>{genres.map(genre => genre.name).join(', ')}{runtime ? ` – ${runtime}m` : null}</p>
+        {/* <p className='movieRuntime'>{runtime ? `${runtime}m` : null}</p> */}
         <Button
           disabled={!currentUser ? true : false}
           onClick={handleWatched}>

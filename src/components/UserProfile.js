@@ -10,14 +10,13 @@ const UserProfile = props => {
   const [userMovies, setUserMovies] = useState([])
 
   useEffect(() => {
-    console.log('UserDetails set user hook')
     setUser(props.users.find(user => props.userId === user.id))
     if (user) {
       setUserMovies(user.movies.slice(0, 5))
     }
   }, [props.userId, props.users, user, props.currentUser])
 
-  const { userId, users, currentUserId, findUser, reloadUser, history } = props
+  const { userId, users, currentUserId, findUser, reloadUser, reloadCurrentUser, history } = props
 
   const renderMovieCards = () =>
     userMovies.map(movie =>
@@ -53,6 +52,7 @@ const UserProfile = props => {
   const reloadUsers = () => {
     reloadUser(currentUserId)
     reloadUser(user.id)
+    reloadCurrentUser()
   }
 
 

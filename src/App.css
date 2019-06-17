@@ -98,6 +98,14 @@ a #flixme {
 .movieOverview {
 }
 
+.movieGenres {
+  font-size: 11px;
+}
+
+.movieRuntime {
+  font-size: 11px;
+}
+
 .movieRating {
   background: rgba(255, 255, 255, 1);
   padding: 1%;
