@@ -116,7 +116,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <Menu icon='labeled' vertical floated='right' className='iconMenu'>
+        <Menu borderless icon='labeled' vertical floated='right' className='iconMenu'>
           {
             !currentUser
               ?
@@ -144,6 +144,10 @@ class App extends Component {
           <Menu.Item name='film' as={Link} to='/movies'>
             <Icon name='film' />
             movies
+          </Menu.Item>
+          <Menu.Item name='people' as={Link} to='/users'>
+            <Icon name='users' />
+            people
           </Menu.Item>
         </Menu>
         <header className="App-header">
