@@ -12,23 +12,23 @@ const MovieDetails = props => {
   }, [props.movieId])
 
   const { poster_path, title, release_date, overview, credits, runtime, genres } = movie || {}
-  const { movieId, users, currentUser, reloadUser, history } = props
+  const { currentUser, reloadCurrentUser, history } = props
 
   const handleRating = (event, { rating }) =>
     API.postRating(currentUser.id, movie.id, rating).then(() => { // change rating in back end
       setUserRating(rating) // change rating in the dom
-      reloadUser(currentUser.id) // reload the user to reflect the change in his movies
+      reloadCurrentUser() // reload the user to reflect the change in his movies
     })
 
   const handleWatched = () => // handles the "marked as seen" button
     userRating === null
       ? API.postRating(currentUser.id, movie.id, 0).then(() => {
         setUserRating(0)
-        reloadUser(currentUser.id)
+        reloadCurrentUser()
       })
       : API.deleteRating(currentUser.id, movie.id).then(() => {
         setUserRating(null)
-        reloadUser(currentUser.id)
+        reloadCurrentUser()
       })
 
   useEffect(() => {
@@ -38,7 +38,6 @@ const MovieDetails = props => {
   }, [currentUser, props.movieId])
 
 
-  // if (!movie) return <Image src='https://i.pinimg.com/originals/42/a0/c8/42a0c868fad26ccebf123244cf6da8b5.jpg' centered></Image>
   if (!movie) return <h1>flixing...</h1>
 
   return (

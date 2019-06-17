@@ -16,8 +16,7 @@ class App extends Component {
     movies: [],
     moviesPage: 1,
     searchTerm: '',
-    users: [],
-    currentUserId: null,
+    currentUser: null
   }
 
   PAGE_SIZE = 20
@@ -38,16 +37,16 @@ class App extends Component {
   initializeWithoutUser = () => {
     API.getMovies()
       .then(this.loadMovies)
-    API.getUsers()
-      .then(this.loadUsers)
+    // API.getUsers()
+    //   .then(this.loadUsers)
   }
 
   signIn = userId =>
     API.getUser(userId)
-      .then(user => this.setState({ currentUserId: user.id, moviesPage: 1 }))
+      .then(currentUser => this.setState({ currentUser, moviesPage: 1 }))
 
   signOut = () => {
-    this.setState({ currentUserId: null })
+    this.setState({ currentUser: null })
     localStorage.removeItem('token')
   }
 
@@ -59,21 +58,21 @@ class App extends Component {
     this.setState({ movies })
   }
 
-  loadUsers = users => this.setState({ users }) // puts ALL users in state
+  // loadUsers = users => this.setState({ users }) // puts ALL users in state
 
-  reloadUser = userId =>
-    API.getUser(userId)
-      .then(user => {
-        const users = [...this.state.users.filter(user => user.id !== userId)]
-        users.push(user)
-        this.setState({ users })
-      })
+  // reloadUser = userId =>
+  //   API.getUser(userId)
+  //     .then(user => {
+  //       const users = [...this.state.users.filter(user => user.id !== userId)]
+  //       users.push(user)
+  //       this.setState({ users })
+  //     })
 
   reloadCurrentUser = () =>
-    API.getUser(this.state.currentUserId)
-      .then(user => this.setState({ currentUserId: user.id }))
+    API.getUser(this.state.currentUser.id)
+      .then(currentUser => this.setState({ currentUser }))
 
-  findUser = userId => this.state.users.find(user => user.id === userId)
+  // findUser = userId => this.state.users.find(user => user.id === userId)
 
   handleSearchChange = (event, { value }) => {
     // return default movies in case search is empty or spaces only
@@ -105,15 +104,13 @@ class App extends Component {
 
   render() {
     const { history } = this.props
-    const { movies, moviesPage, searchTerm, currentUserId, users } = this.state
+    const { movies, moviesPage, searchTerm, currentUser } = this.state
     const {
       handleSearchChange,
       handleScroll,
       handleUserClick,
       signIn,
       signOut,
-      findUser,
-      reloadUser,
       reloadCurrentUser
     } = this
 
@@ -121,7 +118,7 @@ class App extends Component {
       <div className="App">
         <Menu icon='labeled' vertical floated='right' className='iconMenu'>
           {
-            !currentUserId
+            !currentUser
               ?
               <Menu.Item name='signup' as={Link} to={'/signup'}>
                 <Icon name='signup' />
@@ -137,12 +134,12 @@ class App extends Component {
           <Menu.Item
             name='user'
             onClick={() => {
-              currentUserId
-                ? history.push(`/users/${currentUserId}`)
+              currentUser
+                ? history.push(`/users/${currentUser.id}`)
                 : history.push('/signin')
             }}>
             <Icon name='user' />
-            {currentUserId && users.length > 0 ? `${findUser(currentUserId).name.split(' ')[0]}` : 'sign in'}
+            {currentUser ? currentUser.first_name : 'sign in'}
           </Menu.Item>
           <Menu.Item name='film' as={Link} to='/movies'>
             <Icon name='film' />
@@ -168,10 +165,18 @@ class App extends Component {
             />
           }
           />
+          <Route path='/movies/:id' render={props => {
+            const id = parseInt(props.match.params.id, 10)
+            return <MovieDetails
+              movieId={id}
+              currentUser={currentUser}
+              reloadCurrentUser={reloadCurrentUser}
+              {...props}
+            />
+          }} />
           <Route exact path='/users' render={props =>
             <UsersContainer
               {...props}
-              users={users}
               handleUserClick={handleUserClick}
             />
           }
@@ -180,23 +185,9 @@ class App extends Component {
             const id = parseInt(props.match.params.id, 10)
             return <UserProfile
               userId={id}
-              users={users}
-              currentUserId={currentUserId}
-              findUser={findUser}
-              reloadUser={reloadUser}
+              currentUser={currentUser}
               reloadCurrentUser={reloadCurrentUser}
               {...props} />
-          }} />
-          <Route path='/movies/:id' render={props => {
-            const id = parseInt(props.match.params.id, 10)
-            return <MovieDetails
-              movieId={id}
-              users={users}
-              currentUser={findUser(currentUserId)}
-              reloadUser={reloadUser}
-              reloadCurrentUser={reloadCurrentUser}
-              {...props}
-            />
           }} />
           <Route exact path='/signin' render={props => <SignIn {...props} signIn={signIn} />} />
           <Route exact path='/signup' render={props => <SignUp {...props} signIn={signIn} />} />

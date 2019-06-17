@@ -6,6 +6,7 @@ const SignUp = props => {
 
   const [userFirstName, setUserFirstName] = useState('')
   const [userLastName, setUserLastName] = useState('')
+  const [avatarURL, setAvatarURL] = useState('')
   const [userEmail, setUserEmail] = useState('')
   const [userPass, setUserPass] = useState('')
 
@@ -14,6 +15,7 @@ const SignUp = props => {
     const user = {
       first_name: userFirstName,
       last_name: userLastName,
+      avatar_url: avatarURL,
       email: userEmail,
       password: userPass
     }
@@ -44,6 +46,9 @@ const SignUp = props => {
       case 'password':
         setUserPass(value)
         break
+      case 'avatar':
+        setAvatarURL(value)
+        break
       default:
     }
   }
@@ -64,6 +69,12 @@ const SignUp = props => {
           placeholder='last name'
         />
       </Form.Group>
+      <Form.Input
+        required
+        fluid
+        name='avatar'
+        placeholder='avatar URL'
+      />
       <Form.Input
         required
         fluid

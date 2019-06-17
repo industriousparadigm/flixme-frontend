@@ -26,7 +26,7 @@ const MoviesContainer = props => {
         initialLoad={false}
         loadMore={handleScroll}
         hasMore={true || false}
-        loader={!searchTerm ? <div className="loader" key={0}>Loading...</div> : null}
+        loader={!searchTerm ? <div className="loader" key={0}>flixing...</div> : null}
       >
         <Card.Group itemsPerRow={5} className='moviesContainer' centered >
           {renderCards()}

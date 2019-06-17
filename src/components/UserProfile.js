@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Image, Header, Button, Icon, Card } from 'semantic-ui-react'
+import { Image, Header, Button, Icon, Card, Form } from 'semantic-ui-react'
 import API from '../api/API'
 
 import MovieCard from './MovieCard'
 
 const UserProfile = props => {
   const [user, setUser] = useState(null)
-  const [userMovies, setUserMovies] = useState([])
+  const [avatarFormValue, setAvatarFormValue] = useState('')
 
   useEffect(() => {
-    setUser(props.users.find(user => props.userId === user.id))
-    if (user) {
-      setUserMovies(user.movies.slice(0, 5))
-    }
-  }, [props.userId, props.users, user, props.currentUser])
+    API.getUser(props.userId)
+      .then(u => {
+        setUser(u)
+      })
+  }, [props.userId, props.currentUser])
 
-  const { userId, users, currentUserId, findUser, reloadUser, reloadCurrentUser, history } = props
+  const { currentUser, reloadCurrentUser, history } = props
 
   const renderMovieCards = () =>
-    userMovies.map(movie =>
+    user.movies.slice(0, 5).map(movie =>
       <MovieCard key={movie.id} movie={movie} />
     )
 
@@ -33,7 +33,7 @@ const UserProfile = props => {
 
   const isFriend = () => {
     let friendship = false
-    findUser(currentUserId).friends.forEach(friend => {
+    currentUser && currentUser.friends.forEach(friend => {
       if (friend.id === user.id) { friendship = true }
     })
     return friendship
@@ -41,40 +41,47 @@ const UserProfile = props => {
 
   const handleFriendButton = () => {
     if (!isFriend()) { // create friendship in backend + refresh user's friends array
-      API.initiateFriendship(currentUserId, user.id)
-        .then(reloadUsers)
+      API.initiateFriendship(currentUser.id, user.id)
+        .then(reloadCurrentUser)
     } else {
-      API.terminateFriendship(currentUserId, user.id)
-        .then(reloadUsers)
+      API.terminateFriendship(currentUser.id, user.id)
+        .then(reloadCurrentUser)
     }
   }
 
-  const reloadUsers = () => {
-    reloadUser(currentUserId)
-    reloadUser(user.id)
-    reloadCurrentUser()
-  }
+  // const handleAvatarButton = event => {
+  //   event.preventDefault()
+  //   const editedUser = { id: user.id, avatar_url: avatarFormValue }
+  //   API.editUser(editedUser).then(setUser)
+  // }
 
 
-  if (!user) return <h1>Loading</h1>
+  if (!user) return <h1>flixing...</h1>
 
   return (
     <div className="userPage">
       <section className='userDetails'>
-        <Image className='userProfileAvatar' circular src={user.avatar_url} size='medium' wrapped />
-        <Header as='h1' >{user.first_name + ' ' + user.last_name}</Header>
+        <Image className='userProfileAvatar' circular src={user.avatar_url} size='medium' wrapped /> <br /> <br />
+        {/* {
+          currentUser.id === user.id && <Form>
+            <Form.Input placeholder='URL here' onChange={event => setAvatarFormValue(event.target.value)} />
+            <Button size='tiny' onClick={handleAvatarButton}>change avatar</Button>
+          </Form>
+        } */}
+        <Header as='h1' >{user.name}</Header>
         <p>watched {user.movies.length} movies</p>
         <Button size='massive' icon onClick={() => history.goBack()}>
           <Icon name='left arrow' />
         </Button>
-        <Button size='massive' icon onClick={handleFriendButton} disabled={currentUserId === user.id ? true : false}>
-          {isFriend() ? 'remove friend' : 'add friend'}
-        </Button>
-
+        {
+          currentUser && <Button size='massive' icon onClick={handleFriendButton} disabled={currentUser.id === user.id ? true : false}>
+            {isFriend() ? 'remove friend' : 'add friend'}
+          </Button>
+        }
       </section>
       <section className='userActivity'>
         <section className='userRecentMovies'>
-          <Header as='h1' >Recently rated</Header>
+          <Header as='h1'>Recently rated</Header>
           <Card.Group itemsPerRow={5} className='moviesContainer' centered >
             {renderMovieCards()}
           </Card.Group>
@@ -88,8 +95,6 @@ const UserProfile = props => {
         <br />
         <br />
       </section>
-      {/* <section className='userOptions' >
-      </section> */}
     </div>
   )
 }

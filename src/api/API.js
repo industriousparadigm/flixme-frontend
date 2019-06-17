@@ -46,13 +46,20 @@ class API {
       .then(resp => resp.json())
 
   // this is to be changed once user login becomes a thing
-  static getUser = (id) =>
-    fetch(this.usersURL + `/${id}`)
+  static getUser = (userId) =>
+    fetch(this.usersURL + `/${userId}`)
       .then(resp => resp.json())
 
   static getUsers = () =>
     fetch(this.usersURL)
       .then(resp => resp.json())
+
+  static editUser = user =>
+    fetch(this.usersURL + `/${user.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user)
+    }).then(resp => resp.json())
 
   static postRating = (userId, movieId, rating) => {
     const data = { userId, movieId, rating }
