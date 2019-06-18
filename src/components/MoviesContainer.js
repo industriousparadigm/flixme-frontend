@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import MovieCard from './MovieCard'
-import { Card, Search } from 'semantic-ui-react'
+import { Card, Search, Form, Checkbox } from 'semantic-ui-react'
 import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroller'
 
@@ -21,6 +21,14 @@ const MoviesContainer = props => {
         className='movieSearch'
         defaultValue={searchTerm}
       />
+      {/* <Form className='movieFilters' size='massive'>
+        <Form.Group widths='equal'>
+          <Form.Input fluid placeholder="later than, e.g. 1999" />
+          <Form.Input fluid placeholder='earlier than, e.g. 2013' />
+          <Form.Select fluid options={[{ text: 'action' }, { text: 'crime' }, { text: 'history' }]} placeholder='genre' />
+        </Form.Group>
+      </Form>
+ */}
       <InfiniteScroll
         pageStart={page}
         initialLoad={false}

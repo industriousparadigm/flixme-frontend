@@ -60,8 +60,14 @@ a #flixme {
   margin-bottom: 5vh;
 }
 
+input,
+.selection {
+  /* border-radius: 500rem !important; */
+}
+
 .moviesContainer {
-  padding: 2vh;
+  padding-left: 5vh;
+  padding-right: 5vh;
 }
 
 .usersContainer {
@@ -153,6 +159,10 @@ a #flixme {
 
 .userPage .header {
   color: white;
+}
+
+.userRecentMovies {
+  padding-bottom: 3vh;
 }
 
 .loader {
