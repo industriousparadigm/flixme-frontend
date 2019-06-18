@@ -84,8 +84,13 @@ input,
   border-radius: 10px;
 }
 
-.moviePoster {
+.moviePosterColumn {
   margin-right: 2vw;
+}
+
+.moviePoster {
+  max-height: 60vh;
+  object-fit: contain;
 }
 
 .movieInfo {
@@ -116,6 +121,11 @@ input,
   background: rgba(255, 255, 255, 1);
   padding: 1%;
   border-radius: 5px;
+}
+
+.modal {
+  position: absolute;
+  left: 8.5%;
 }
 
 .userPage {
