@@ -1,8 +1,10 @@
 class API {
   static baseURL = 'http://localhost:3017'
   static moviesURL = this.baseURL + '/movies'
+  static filtersURL = this.baseURL + '/movies_filtered'
   static searchURL = this.baseURL + '/movie_search?search='
   static usersURL = this.baseURL + '/users'
+  static genresURL = this.baseURL + '/genres'
   static rateMovieURL = this.baseURL + '/rate_movie'
   static deleteMovieURL = this.baseURL + '/forget_movie'
   static signInURL = this.baseURL + '/signin'
@@ -60,6 +62,10 @@ class API {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user)
     }).then(resp => resp.json())
+
+  static getGenres = () =>
+    fetch(this.genresURL)
+      .then(resp => resp.json())
 
   static postRating = (userId, movieId, rating) => {
     const data = { userId, movieId, rating }

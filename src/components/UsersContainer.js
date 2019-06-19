@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Image } from 'semantic-ui-react'
+import { Card, Image, Segment, Dimmer, Loader } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import API from '../api/API'
 
@@ -22,7 +22,16 @@ const UsersContainer = props => {
       </Link>
     )
 
-  if (users.length === 0) return <h1>flixing...</h1>
+  if (users.length === 0) return <Segment>
+    <Dimmer active>
+      <Loader size='massive'>Loading</Loader>
+    </Dimmer>
+
+    <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
+    <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
+    <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
+  </Segment>
+
 
   return (
     <Card.Group className='usersContainer' centered>

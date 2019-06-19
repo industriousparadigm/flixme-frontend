@@ -15,8 +15,10 @@ class App extends Component {
   state = {
     movies: [],
     moviesPage: 1,
+    genres: [],
     searchTerm: '',
-    currentUser: null
+    currentUser: null,
+    filterQueries: ''
   }
 
   PAGE_SIZE = 20
@@ -35,8 +37,8 @@ class App extends Component {
   }
 
   initializeWithoutUser = () => {
-    API.getMovies()
-      .then(this.loadMovies)
+    API.getMovies().then(this.loadMovies)
+    API.getGenres().then(this.loadGenres)
     // API.getUsers()
     //   .then(this.loadUsers)
   }
@@ -53,26 +55,16 @@ class App extends Component {
   // puts the top 20 movies in state and resets page count
   loadMovies = json => this.setState({ movies: json, moviesPage: 1 })
 
+  loadGenres = genres => this.setState({ genres })
+
   appendMovies = json => { // appends 20 movies
     const movies = ([...this.state.movies].concat(json))
     this.setState({ movies })
   }
 
-  // loadUsers = users => this.setState({ users }) // puts ALL users in state
-
-  // reloadUser = userId =>
-  //   API.getUser(userId)
-  //     .then(user => {
-  //       const users = [...this.state.users.filter(user => user.id !== userId)]
-  //       users.push(user)
-  //       this.setState({ users })
-  //     })
-
   reloadCurrentUser = () =>
     API.getUser(this.state.currentUser.id)
       .then(currentUser => this.setState({ currentUser }))
-
-  // findUser = userId => this.state.users.find(user => user.id === userId)
 
   handleSearchChange = (event, { value }) => {
     // return default movies in case search is empty or spaces only
@@ -90,10 +82,19 @@ class App extends Component {
     this.setState({ searchTerm: value })
   }
 
-  handleScroll = () => { // loads more movies + increments moviesPage, 1 page per 20 movies
+  handleFilters = urlQueries => {
+    this.setState({ filterQueries: '&' + urlQueries })
     const { moviesPage } = this.state
-    if (!this.state.searchTerm)
-      API.getMovies(API.moviesURL + `?page=${moviesPage + 1}`)
+    if (urlQueries) urlQueries = '&' + urlQueries
+    API.getMovies(API.moviesURL + `?page=${moviesPage}` + urlQueries)
+      .then(this.loadMovies)
+    this.setState({ moviesPage: moviesPage + 1 })
+  }
+
+  handleScroll = (event, urlQueries = '') => { // loads more movies + increments moviesPage, 1 page per 20 movies
+    const { moviesPage } = this.state
+    if (!this.state.searchTerm && !this.state.filterQueries)
+      API.getMovies(API.moviesURL + `?page=${moviesPage + 1}` + urlQueries)
         .then(this.appendMovies)
     this.setState({ moviesPage: moviesPage + 1 })
   }
@@ -104,11 +105,12 @@ class App extends Component {
 
   render() {
     const { history } = this.props
-    const { movies, moviesPage, searchTerm, currentUser } = this.state
+    const { movies, moviesPage, genres, searchTerm, currentUser } = this.state
     const {
       handleSearchChange,
       handleScroll,
       handleUserClick,
+      handleFilters,
       signIn,
       signOut,
       reloadCurrentUser
@@ -166,6 +168,9 @@ class App extends Component {
               handleSearchChange={handleSearchChange}
               searchTerm={searchTerm}
               handleScroll={handleScroll}
+              handleFilters={handleFilters}
+              genres={genres}
+              currentUser={currentUser}
             />
           }
           />

@@ -60,10 +60,55 @@ a #flixme {
   margin-bottom: 5vh;
 }
 
-input,
-.selection {
-  /* border-radius: 500rem !important; */
+.movieFilters {
+  width: 80%;
+  margin: 0 auto;
 }
+
+.multiSelect {
+  width: 100%;
+  z-index: 52;
+}
+
+.ui.link.card {
+  position: relative;
+}
+
+.ui.star.rating.cardHover {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: 1em 0;
+  bottom: 0;
+  width: 100%;
+  position: absolute;
+  opacity: 0;
+  background-color: rgba(255, 255, 255, 0.6);
+  transition: 0.3s;
+  /* border-radius: 5px; */
+}
+
+.seenSymbol {
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  position: absolute;
+  opacity: 0;
+}
+
+.seenSymbol:hover {
+  opacity: 1;
+}
+
+.ui.star.rating.cardHover:hover {
+  opacity: 1;
+}
+
+/* input,
+.selection {
+  border-radius: 500rem !important;
+} */
 
 .moviesContainer {
   padding-left: 5vh;
@@ -172,7 +217,7 @@ input,
 }
 
 .userRecentMovies {
-  padding-bottom: 3vh;
+  padding-bottom: 8vh;
 }
 
 .loader {
