@@ -18,10 +18,16 @@ const UserProfile = props => {
 
   const { currentUser, reloadCurrentUser, history } = props
 
-  const renderMovieCards = () =>
-    user.movies.slice(0, 5).map(movie =>
-      <MovieCard key={movie.id} movie={movie} />
+  const renderMovieCards = () => {
+    return user.movies.slice(0, 5).map(movie =>
+      <MovieCard
+        key={movie.id}
+        movie={movie}
+        currentUser={user}
+        reloadCurrentUser={reloadCurrentUser}
+        allowEdit={currentUser && user.id === currentUser.id ? true : false} />
     )
+  }
 
   const renderUserCards = () =>
     user.friends.length > 0 && user.friends.map(friend =>

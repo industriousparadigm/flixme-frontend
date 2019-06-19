@@ -12,7 +12,7 @@ const MoviesContainer = props => {
   const [selectedGenres, setSelectedGenres] = useState([])
   const [sorter, setSorter] = useState('')
   const [seenToggle, setSeenToggle] = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(true)
 
   // useEffect(() => {
   //   if (movie && props.currentUser) {
@@ -24,13 +24,13 @@ const MoviesContainer = props => {
 
 
 
-  const { movies, page, currentUser, genres, handleSearchChange, searchTerm, handleFilters, handleScroll, history } = props
+  const { movies, page, currentUser, reloadCurrentUser, genres, handleSearchChange, searchTerm, handleFilters, handleScroll, history } = props
 
   const renderCards = () =>
     movies.length > 0 && movies.map(movie =>
       currentUser && !currentUser.movies.find(m => m.id === movie.id)
-        ? <MovieCard key={movie.id} movie={movie} currentUser={currentUser} />
-        : !seenToggle && <MovieCard key={movie.id} movie={movie} currentUser={currentUser} />
+        ? <MovieCard key={movie.id} movie={movie} currentUser={currentUser} reloadCurrentUser={reloadCurrentUser} inMoviesPage allowEdit />
+        : !seenToggle && <MovieCard key={movie.id} movie={movie} currentUser={currentUser} reloadCurrentUser={reloadCurrentUser} inMoviesPage allowEdit />
     )
 
   const handleFilterSubmit = () => {

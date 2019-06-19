@@ -171,6 +171,7 @@ class App extends Component {
               handleFilters={handleFilters}
               genres={genres}
               currentUser={currentUser}
+              reloadCurrentUser={reloadCurrentUser}
             />
           }
           />

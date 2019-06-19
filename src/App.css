@@ -69,6 +69,10 @@ a #flixme {
   width: 100%;
   z-index: 52;
 }
+.select__menu {
+  color: black;
+  padding: 5px;
+}
 
 .ui.link.card {
   position: relative;

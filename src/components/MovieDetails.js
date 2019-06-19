@@ -14,11 +14,12 @@ const MovieDetails = props => {
   const { poster_path, title, release_date, overview, credits, runtime, genres } = movie || {}
   const { currentUser, reloadCurrentUser, history } = props
 
-  const handleRating = (event, { rating }) =>
+  const handleRating = (event, { rating }) => {
     API.postRating(currentUser.id, movie.id, rating).then(() => { // change rating in back end
       setUserRating(rating) // change rating in the dom
       reloadCurrentUser() // reload the user to reflect the change in his movies
     })
+  }
 
   const handleWatched = () => // handles the "marked as seen" button
     userRating === null
