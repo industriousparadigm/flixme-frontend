@@ -12,17 +12,7 @@ const MoviesContainer = props => {
   const [selectedGenres, setSelectedGenres] = useState([])
   const [sorter, setSorter] = useState('')
   const [seenToggle, setSeenToggle] = useState(false)
-  const [showFilters, setShowFilters] = useState(true)
-
-  // useEffect(() => {
-  //   if (movie && props.currentUser) {
-  //     const userMovie = props.currentUser.movies.find(m => m.id === movie.id)
-  //     if (userMovie) setUserRating(userMovie.user_rating)
-  //   }
-  //   props.currentUser && console.log(props.currentUser.movies.length)
-  // }, [props.movie, props.currentUser, movie, userRating])
-
-
+  const [showFilters, setShowFilters] = useState(!props.filtersOn ? true : false)
 
   const { movies, page, currentUser, reloadCurrentUser, genres, handleSearchChange, searchTerm, handleFilters, handleScroll, history } = props
 

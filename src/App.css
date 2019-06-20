@@ -12,6 +12,11 @@ body .App {
   background-size: cover;
 }
 
+.allContent {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 .App-header {
   display: flex;
   min-height: 20vh;
@@ -74,14 +79,29 @@ a #flixme {
   padding: 5px;
 }
 
-.ui.link.card {
-  position: relative;
+.ui.star.rating .icon {
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .ui.star.rating.cardHover {
+  /* border-radius: 5px; */
+}
+
+/* .icon.seenIcon {
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  position: absolute;
+  opacity: 0;
+  transition: 0.3s;
+} */
+
+.allEncompassingDiv {
   height: 100%;
   display: flex;
   align-items: flex-end;
+  justify-content: center;
   padding: 1em 0;
   bottom: 0;
   width: 100%;
@@ -89,30 +109,51 @@ a #flixme {
   opacity: 0;
   background-color: rgba(255, 255, 255, 0.6);
   transition: 0.3s;
-  /* border-radius: 5px; */
 }
 
-.seenSymbol {
-  top: 0;
-  height: 100%;
-  display: flex;
-  align-items: flex-start;
-  position: absolute;
-  opacity: 0;
+.allEncompassingDiv:hover {
+  opacity: 1;
 }
 
-.seenSymbol:hover {
+.seenIcon {
+  position: fixed;
+  top: 7%;
+  opacity: 0.8 !important;
+}
+
+i.big.icon.seenIcon {
+  font-size: 3em;
+}
+
+i.yellow.icon.seenIcon {
+  /* color: rgb(255, 238, 0) !important; */
+}
+
+.icon.seenIcon:hover {
+  opacity: 0.9 !important;
+}
+
+.yellow.seenIcon {
+  color: white !important;
+}
+
+.cardRating {
+  position: fixed;
+  bottom: 10%;
+  width: 90%;
+}
+
+/* .icon.seenIcon:hover {
   opacity: 1;
 }
 
 .ui.star.rating.cardHover:hover {
   opacity: 1;
-}
-
-/* input,
-.selection {
-  border-radius: 500rem !important;
 } */
+
+div.cardRating i.icon {
+  font-size: 1.2em;
+}
 
 .moviesContainer {
   padding-left: 5vh;
@@ -194,6 +235,11 @@ a #flixme {
 .userActivity {
   /* background-color: gray; */
   width: 60%;
+}
+
+.ui.tiny.image.userImage {
+  width: 10vh;
+  height: 10vh;
 }
 
 .userProfileAvatar {

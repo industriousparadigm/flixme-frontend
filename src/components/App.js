@@ -118,91 +118,93 @@ class App extends Component {
 
     return (
       <div className="App">
-        <Menu borderless icon='labeled' vertical floated='right' className='iconMenu'>
-          {
-            !currentUser
-              ?
-              <Menu.Item name='signup' as={Link} to={'/signup'}>
-                <Icon name='signup' />
-                sign up
+        <div className="allContent">
+          <Menu borderless icon='labeled' vertical floated='right' className='iconMenu'>
+            {
+              !currentUser
+                ?
+                <Menu.Item name='signup' as={Link} to={'/signup'}>
+                  <Icon name='signup' />
+                  sign up
               </Menu.Item>
-              :
-              <Menu.Item
-                name='signout' as={Link} to={'/'} onClick={signOut}>
-                <Icon name='cut' />
-                sign out
+                :
+                <Menu.Item
+                  name='signout' as={Link} to={'/'} onClick={signOut}>
+                  <Icon name='cut' />
+                  sign out
               </Menu.Item>
-          }
-          <Menu.Item
-            name='user'
-            onClick={() => {
-              currentUser
-                ? history.push(`/users/${currentUser.id}`)
-                : history.push('/signin')
-            }}>
-            <Icon name='user' />
-            {currentUser ? currentUser.first_name : 'sign in'}
+            }
+            <Menu.Item
+              name='user'
+              onClick={() => {
+                currentUser
+                  ? history.push(`/users/${currentUser.id}`)
+                  : history.push('/signin')
+              }}>
+              <Icon name='user' />
+              {currentUser ? currentUser.first_name : 'sign in'}
+            </Menu.Item>
+            <Menu.Item name='film' as={Link} to='/movies'>
+              <Icon name='film' />
+              movies
           </Menu.Item>
-          <Menu.Item name='film' as={Link} to='/movies'>
-            <Icon name='film' />
-            movies
+            <Menu.Item name='people' as={Link} to='/users'>
+              <Icon name='users' />
+              people
           </Menu.Item>
-          <Menu.Item name='people' as={Link} to='/users'>
-            <Icon name='users' />
-            people
-          </Menu.Item>
-        </Menu>
-        <header className="App-header">
-          <Link to={'/'}><h1 id='flixme'>flix me</h1></Link>
-        </header>
-        <Switch>
-          <Route exact path='/' render={props =>
-            <Choices {...props} />
-          } />
-          <Route exact path='/movies' render={props =>
-            <MoviesContainer
-              {...props}
-              movies={movies}
-              page={moviesPage}
-              PAGE_SIZE={this.PAGE_SIZE}
-              handleSearchChange={handleSearchChange}
-              searchTerm={searchTerm}
-              handleScroll={handleScroll}
-              handleFilters={handleFilters}
-              genres={genres}
-              currentUser={currentUser}
-              reloadCurrentUser={reloadCurrentUser}
+          </Menu>
+          <header className="App-header">
+            <Link to={'/'}><h1 id='flixme'>flix me</h1></Link>
+          </header>
+          <Switch>
+            <Route exact path='/' render={props =>
+              <Choices {...props} />
+            } />
+            <Route exact path='/movies' render={props =>
+              <MoviesContainer
+                {...props}
+                movies={movies}
+                page={moviesPage}
+                PAGE_SIZE={this.PAGE_SIZE}
+                handleSearchChange={handleSearchChange}
+                searchTerm={searchTerm}
+                handleScroll={handleScroll}
+                handleFilters={handleFilters}
+                genres={genres}
+                currentUser={currentUser}
+                reloadCurrentUser={reloadCurrentUser}
+              />
+            }
             />
-          }
-          />
-          <Route path='/movies/:id' render={props => {
-            const id = parseInt(props.match.params.id, 10)
-            return <MovieDetails
-              movieId={id}
-              currentUser={currentUser}
-              reloadCurrentUser={reloadCurrentUser}
-              {...props}
+            <Route path='/movies/:id' render={props => {
+              const id = parseInt(props.match.params.id, 10)
+              return <MovieDetails
+                movieId={id}
+                currentUser={currentUser}
+                reloadCurrentUser={reloadCurrentUser}
+                {...props}
+              />
+            }} />
+            <Route exact path='/users' render={props =>
+              <UsersContainer
+                {...props}
+                handleUserClick={handleUserClick}
+              />
+            }
             />
-          }} />
-          <Route exact path='/users' render={props =>
-            <UsersContainer
-              {...props}
-              handleUserClick={handleUserClick}
-            />
-          }
-          />
-          <Route path='/users/:id' render={props => {
-            const id = parseInt(props.match.params.id, 10)
-            return <UserProfile
-              userId={id}
-              currentUser={currentUser}
-              reloadCurrentUser={reloadCurrentUser}
-              {...props} />
-          }} />
-          <Route exact path='/signin' render={props => <SignIn {...props} signIn={signIn} />} />
-          <Route exact path='/signup' render={props => <SignUp {...props} signIn={signIn} />} />
-          <Route component={props => <img src='http://www.404lovers.com/wp-content/uploads/2014/08/batman-3ddotde-1170x563.jpg' alt='404 not found'></img>} />
-        </Switch>
+            <Route path='/users/:id' render={props => {
+              const id = parseInt(props.match.params.id, 10)
+              return <UserProfile
+                userId={id}
+                currentUser={currentUser}
+                reloadCurrentUser={reloadCurrentUser}
+                {...props} />
+            }} />
+            <Route exact path='/signin' render={props => <SignIn {...props} signIn={signIn} />} />
+            <Route exact path='/signup' render={props => <SignUp {...props} signIn={signIn} />} />
+            <Route component={props => <img src='http://www.404lovers.com/wp-content/uploads/2014/08/batman-3ddotde-1170x563.jpg' alt='404 not found'></img>} />
+          </Switch>
+        </div>
       </div>
     )
   }

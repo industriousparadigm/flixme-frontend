@@ -15,9 +15,9 @@ const MovieDetails = props => {
   const { currentUser, reloadCurrentUser, history } = props
 
   const handleRating = (event, { rating }) => {
+    setUserRating(rating) // change rating in the Rating component
     API.postRating(currentUser.id, movie.id, rating).then(() => { // change rating in back end
-      setUserRating(rating) // change rating in the dom
-      reloadCurrentUser() // reload the user to reflect the change in his movies
+      reloadCurrentUser() // reload the user to reflect the change in his movies elsewhere
     })
   }
 
