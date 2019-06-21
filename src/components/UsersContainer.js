@@ -22,15 +22,7 @@ const UsersContainer = props => {
       </Link>
     )
 
-  if (users.length === 0) return <Segment>
-    <Dimmer active>
-      <Loader size='massive'>Loading</Loader>
-    </Dimmer>
-
-    <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
-    <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
-    <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
-  </Segment>
+  if (users.length === 0) return <h1>flixing...</h1>
 
 
   return (

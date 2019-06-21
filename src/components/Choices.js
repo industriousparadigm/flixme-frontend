@@ -6,13 +6,11 @@ const Choices = props => {
 
   return (
     <Fragment>
-      <Link to={'/movies'}>
-        <Button size='massive'>movies</Button>
-      </Link>
-      <Button size='massive'>recommendations</Button>
+      <Button onClick={props.setSearchable} size='massive'>movies</Button>
+      <Button onClick={props.setFilterable} size='massive'>recommendations</Button>
       <Link to={'/users'}>
         <Button size='massive'>people</Button>
-      </Link>
+      </Link> <br /> <br />
     </Fragment>
   )
 }

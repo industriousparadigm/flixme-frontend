@@ -6,7 +6,7 @@ import API from '../api/API'
 import MoviesContainer from './MoviesContainer'
 import UsersContainer from './UsersContainer'
 import MovieDetails from './MovieDetails'
-import Choices from './Choices';
+import Choices from './Choices'
 import UserProfile from './UserProfile'
 import SignUp from './SignUp'
 import SignIn from './SignIn'
@@ -18,7 +18,7 @@ class App extends Component {
     genres: [],
     searchTerm: '',
     currentUser: null,
-    filterQueries: ''
+    filters: false
   }
 
   PAGE_SIZE = 20
@@ -93,7 +93,7 @@ class App extends Component {
 
   handleScroll = (event, urlQueries = '') => { // loads more movies + increments moviesPage, 1 page per 20 movies
     const { moviesPage } = this.state
-    if (!this.state.searchTerm && !this.state.filterQueries)
+    if (!this.state.searchTerm && !this.state.filters)
       API.getMovies(API.moviesURL + `?page=${moviesPage + 1}` + urlQueries)
         .then(this.appendMovies)
     this.setState({ moviesPage: moviesPage + 1 })
@@ -105,7 +105,7 @@ class App extends Component {
 
   render() {
     const { history } = this.props
-    const { movies, moviesPage, genres, searchTerm, currentUser } = this.state
+    const { movies, moviesPage, genres, searchTerm, currentUser, filters } = this.state
     const {
       handleSearchChange,
       handleScroll,
@@ -158,7 +158,16 @@ class App extends Component {
           </header>
           <Switch>
             <Route exact path='/' render={props =>
-              <Choices {...props} />
+              <Choices
+                {...props}
+                setSearchable={() => {
+                  this.setState({ filters: false }, () => history.push('/movies'))
+                }}
+                setFilterable={() => {
+                  this.setState({ filters: true }, () => history.push('/movies'))
+                }}
+
+              />
             } />
             <Route exact path='/movies' render={props =>
               <MoviesContainer
@@ -173,6 +182,7 @@ class App extends Component {
                 genres={genres}
                 currentUser={currentUser}
                 reloadCurrentUser={reloadCurrentUser}
+                filters={filters}
               />
             }
             />

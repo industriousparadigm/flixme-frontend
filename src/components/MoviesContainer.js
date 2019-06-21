@@ -12,9 +12,9 @@ const MoviesContainer = props => {
   const [selectedGenres, setSelectedGenres] = useState([])
   const [sorter, setSorter] = useState('')
   const [seenToggle, setSeenToggle] = useState(false)
-  const [showFilters, setShowFilters] = useState(!props.filtersOn ? true : false)
+  // const [showFilters, setShowFilters] = useState(!props.filtersOn ? true : false)
 
-  const { movies, page, currentUser, reloadCurrentUser, genres, handleSearchChange, searchTerm, handleFilters, handleScroll, history } = props
+  const { movies, page, currentUser, reloadCurrentUser, genres, handleSearchChange, searchTerm, handleFilters, handleScroll, filters, history } = props
 
   const renderCards = () =>
     movies.length > 0 && movies.map(movie =>
@@ -36,7 +36,7 @@ const MoviesContainer = props => {
   return (
     <Fragment>
       {
-        !showFilters && <Search
+        !filters && <Search
           onSearchChange={_.debounce(handleSearchChange, 500)}
           size='massive'
           showNoResults={false}
@@ -45,7 +45,7 @@ const MoviesContainer = props => {
         />
       }
       {
-        showFilters && <Form className='movieFilters' >
+        filters && <Form className='movieFilters' >
           <Button floated='left' icon onClick={() => setSeenToggle(!seenToggle)}>
             <Icon name={seenToggle ? 'eye slash' : 'eye'} />
           </Button>
@@ -54,12 +54,12 @@ const MoviesContainer = props => {
             <Form.Input type='number' fluid placeholder="YYYY" width={2} onChange={(event, { value }) => setMinYear(value)} />
             <Form.Input type='number' fluid placeholder='YYYY' width={2} onChange={(event, { value }) => setMaxYear(value)} />
             <Form.Select
+              placeholder='sort by'
               options={[
                 { key: 'pop', text: 'Popularity', value: 'popularity.desc' },
                 { key: 'usr', text: 'User rating', value: 'vote_average.desc' },
                 { key: 'rld', text: 'Release date', value: 'release_date.desc' },
               ]}
-              placeholder='sort by'
               onChange={(event, { value }) => setSorter(value)}
               width={3}
             />
@@ -70,10 +70,11 @@ const MoviesContainer = props => {
               className="multiSelect"
               classNamePrefix="select"
               onChange={(event, { option }) => {
+                console.log(event, option)
                 if (option) {
                   setSelectedGenres([...selectedGenres, option.id])
                 } else {
-                  setSelectedGenres([])
+                  !option ? event && setSelectedGenres(event.map(genre => genre.id)) : setSelectedGenres([])
                 }
               }}
             />
