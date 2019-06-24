@@ -7,7 +7,7 @@ const Choices = props => {
   return (
     <Fragment>
       <Button onClick={props.setSearchable} size='massive'>movies</Button>
-      <Button onClick={props.setFilterable} size='massive'>recommendations</Button>
+      {/* <Button onClick={props.setFilterable} size='massive'>recommendations</Button> */}
       <Link to={'/users'}>
         <Button size='massive'>people</Button>
       </Link> <br /> <br />
